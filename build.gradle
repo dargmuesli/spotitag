@@ -14,6 +14,7 @@ repositories {
 }
 
 ext {
+    ikonliVersion = '12.3.1'
     junitVersion = '5.8.2'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '7.0.1'
@@ -44,6 +45,8 @@ javafx {
 
 dependencies {
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
+    implementation("org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}")
+    implementation("org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}")
     implementation("se.michaelthelin.spotify:spotify-web-api-java:${spotifyWebApiJavaVersion}")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
