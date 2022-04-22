@@ -17,6 +17,7 @@ ext {
     ikonliVersion = '12.3.1'
     jacksonVersion = '2.13.2.2'
     junitVersion = '5.8.2'
+    log4jVersion = '2.17.2'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '7.0.1'
 }
@@ -47,6 +48,8 @@ javafx {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
+    implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
+    implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
     implementation("org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}")
     implementation("org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}")
     implementation("se.michaelthelin.spotify:spotify-web-api-java:${spotifyWebApiJavaVersion}")
