@@ -19,7 +19,7 @@ ext {
     junitVersion = '5.8.2'
     log4jVersion = '2.17.2'
     mp3agicVersion = '0.9.1'
-    spotifyWebApiJavaVersion = '7.0.1'
+    spotifyWebApiJavaVersion = '7.1.0'
 }
 
 sourceCompatibility = '11'
