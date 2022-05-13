@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" minHeight="100.0" minWidth="250.0"
+      xmlns="http://javafx.com/javafx"
+      fx:controller="de.dargmuesli.spotitag.ui.controller.NotificationController">
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+    </padding>
+    <Label fx:id="lblNotification" text="Dies ist ein Text"/>
+</HBox>

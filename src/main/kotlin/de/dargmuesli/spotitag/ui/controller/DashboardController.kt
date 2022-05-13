@@ -1,4 +1,4 @@
-package de.dargmuesli.spotitag
+package de.dargmuesli.spotitag.ui.controller
 
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -9,7 +9,7 @@ import javafx.stage.Stage
 import java.io.File
 
 
-class MainController {
+class DashboardController {
     private val directoryChooser = DirectoryChooser()
 
     @FXML
