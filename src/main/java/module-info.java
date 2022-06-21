@@ -5,6 +5,9 @@ module de.dargmuesli.spotitag {
     requires javafx.controls;
     requires javafx.fxml;
     requires kotlin.stdlib;
+    requires kotlinx.coroutines.core.jvm;
+    requires kotlinx.coroutines.javafx;
+    requires mp3agic;
     requires org.apache.logging.log4j;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.fontawesome5;

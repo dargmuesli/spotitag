@@ -17,6 +17,7 @@ ext {
     ikonliVersion = '12.3.1'
     jacksonVersion = '2.13.3'
     junitVersion = '5.8.2'
+    kotlinCoroutineVersion = '1.6.2'
     log4jVersion = '2.17.2'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '7.1.0'
@@ -50,6 +51,7 @@ dependencies {
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
     implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:${kotlinCoroutineVersion}")
     implementation("org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}")
     implementation("org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}")
     implementation("se.michaelthelin.spotify:spotify-web-api-java:${spotifyWebApiJavaVersion}")
