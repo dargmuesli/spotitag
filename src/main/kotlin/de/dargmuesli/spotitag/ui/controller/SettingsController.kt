@@ -1,7 +1,6 @@
 package de.dargmuesli.spotitag.ui.controller
 
 import de.dargmuesli.spotitag.persistence.state.settings.spotify.SpotifySettings
-import de.dargmuesli.spotitag.persistence.state.settings.youtube.YouTubeSettings
 import de.dargmuesli.spotitag.provider.spotify.SpotifyUtil
 import de.dargmuesli.spotitag.util.Etter
 import javafx.fxml.FXML

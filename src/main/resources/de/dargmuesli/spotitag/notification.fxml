@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
-<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" minHeight="100.0" minWidth="250.0"
+<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" minHeight="100.0" minWidth="250.0"
       xmlns="http://javafx.com/javafx"
       fx:controller="de.dargmuesli.spotitag.ui.controller.NotificationController">
     <padding>

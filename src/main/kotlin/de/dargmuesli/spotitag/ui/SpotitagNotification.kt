@@ -22,6 +22,6 @@ object SpotitagNotification {
 
     private fun displayPopup(text: String, title: String = "Notification") {
         NotificationController.notifications.add(text)
-        SpotitagStage("/de/dargmuesli/spotitag/fxml/Notification.fxml", Modality.APPLICATION_MODAL, title, true).showAndWait()
+        SpotitagStage("/de/dargmuesli/spotitag/fxml/notification.fxml", Modality.APPLICATION_MODAL, title, true).showAndWait()
     }
 }

@@ -6,9 +6,9 @@ import de.dargmuesli.spotitag.persistence.state.SpotitagState
 
 object SpotifyUtil {
     val spotifyApiBuilder: SpotifyApi.Builder = SpotifyApi.builder()
-            .setClientId(SpotitagState.settings.spotifySettings.clientId)
-            .setClientSecret(SpotitagState.settings.spotifySettings.clientSecret)
-            .setRedirectUri(SpotitagState.settings.spotifySettings.redirectUri)
+            .setClientId(SpotitagState.settings.spotify.clientId)
+            .setClientSecret(SpotitagState.settings.spotify.clientSecret)
+            .setRedirectUri(SpotitagState.settings.spotify.redirectUri)
     var spotifyApi: SpotifyApi = spotifyApiBuilder.build()
 
     init {

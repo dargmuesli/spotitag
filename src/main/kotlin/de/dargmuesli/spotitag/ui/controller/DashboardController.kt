@@ -6,6 +6,7 @@ import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.Node
+import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.stage.DirectoryChooser
@@ -32,6 +33,9 @@ class DashboardController : CoroutineScope {
     private lateinit var directoryChosenTextField: TextField
 
     @FXML
+    private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
+
+    @FXML
     private lateinit var filesFoundLabel: Label
 
     @FXML
@@ -45,22 +49,29 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun initialize() {
-        directoryChosenTextField.text = SpotitagSettings.sourceDirectory
+        directoryChosenTextField.text = SpotitagSettings.fileSystem.sourceDirectory
+        isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded
     }
 
     @FXML
     fun chooseDirectory(actionEvent: ActionEvent) {
-        directoryChooser.initialDirectory = File(SpotitagSettings.sourceDirectory)
+        val sourceDirectory = File(SpotitagSettings.fileSystem.sourceDirectory)
+        directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
         val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
 
         directoryChosenTextField.text = file.absolutePath
-        SpotitagSettings.sourceDirectory = file.absolutePath
+        SpotitagSettings.fileSystem.sourceDirectory = file.absolutePath
+    }
+
+    @FXML
+    fun onSubdirectoryInclusionToggle(actionEvent: ActionEvent) {
+        SpotitagSettings.fileSystem.isSubDirectoryIncluded = isSubdirectoryIncludedCheckBox.isSelected
     }
 
     @FXML
     fun onScan() {
         launch(Dispatchers.IO) {
-            val x = scanFiles(File(SpotitagSettings.sourceDirectory))
+            val x = scanFiles(File(SpotitagSettings.fileSystem.sourceDirectory))
 
             val filesFound = x[0]
             val filesFoundWithSpotifyId = x[1]

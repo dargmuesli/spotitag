@@ -6,56 +6,60 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.dargmuesli.spotitag.ui.controller.DashboardController">
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="de.dargmuesli.spotitag.ui.controller.DashboardController">
     <VBox alignment="CENTER" spacing="10.0">
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
         <VBox>
-            <Label text="Source directory" />
+            <Label text="Source directory"/>
             <HBox alignment="CENTER" spacing="10.0">
                 <Button mnemonicParsing="false" onAction="#chooseDirectory">
                     <graphic>
-                        <FontIcon iconLiteral="fas-folder-open" />
+                        <FontIcon iconLiteral="fas-folder-open"/>
                     </graphic>
                 </Button>
-                <TextField fx:id="directoryChosenTextField" HBox.hgrow="ALWAYS" />
+                <TextField fx:id="directoryChosenTextField" HBox.hgrow="ALWAYS"/>
             </HBox>
         </VBox>
-        <CheckBox mnemonicParsing="false" text="%includeSubFolders" />
+        <CheckBox fx:id="isSubdirectoryIncludedCheckBox" mnemonicParsing="false"
+                  onAction="#onSubdirectoryInclusionToggle" text="%isSubdirectoryIncluded"/>
 
-        <Label />
-        <Button onAction="#onScan" text="Scan" />
-        <ProgressBar minHeight="-Infinity" progress="0.43" />
+        <Label/>
+        <Button onAction="#onScan" text="Scan"/>
+        <ProgressBar minHeight="-Infinity" progress="0.43"/>
         <GridPane hgap="10.0" vgap="10.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="339.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="71.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="339.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="199.0" minWidth="10.0" prefWidth="71.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <opaqueInsets>
-                <Insets />
+                <Insets/>
             </opaqueInsets>
             <VBox.margin>
-                <Insets />
+                <Insets/>
             </VBox.margin>
-            <Label text="%filesFound" />
-            <Label layoutX="10.0" layoutY="6.0" text="%filesWithSpotifyId" GridPane.rowIndex="1" />
-            <Label layoutX="10.0" layoutY="6.0" text="%filesWithSpotitagVersion" GridPane.rowIndex="2" />
-            <Label fx:id="filesFoundLabel" text="-" GridPane.columnIndex="1" />
-            <Label fx:id="filesFoundWithSpotifyIdLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label layoutX="10.0" layoutY="26.0" text="%filesWithSpotitagVersionNewest" GridPane.rowIndex="3" />
-            <Label fx:id="filesFoundWithSpotitagVersionLabel" layoutX="225.0" layoutY="26.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="filesFoundWithSpotitagVersionNewestLabel" layoutX="225.0" layoutY="46.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="%filesFound"/>
+            <Label layoutX="10.0" layoutY="6.0" text="%filesWithSpotifyId" GridPane.rowIndex="1"/>
+            <Label layoutX="10.0" layoutY="6.0" text="%filesWithSpotitagVersion" GridPane.rowIndex="2"/>
+            <Label fx:id="filesFoundLabel" text="-" GridPane.columnIndex="1"/>
+            <Label fx:id="filesFoundWithSpotifyIdLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label layoutX="10.0" layoutY="26.0" text="%filesWithSpotitagVersionNewest" GridPane.rowIndex="3"/>
+            <Label fx:id="filesFoundWithSpotitagVersionLabel" layoutX="225.0" layoutY="26.0" text="-"
+                   GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label fx:id="filesFoundWithSpotitagVersionNewestLabel" layoutX="225.0" layoutY="46.0" text="-"
+                   GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         </GridPane>
         <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            <ImageView fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
         </HBox>
     </VBox>
 </ScrollPane>
