@@ -34,7 +34,7 @@ class SettingsController : Initializable {
         )
 
         for ((textField, etter) in uriToEtterMap) {
-            textField.text = etter.getter.invoke().toString()
+            textField.text = etter.getter.invoke()?.toString() ?: ""
             textField.textProperty().addListener { _, _, newText -> etter.setter.invoke(URI(newText)) }
         }
 

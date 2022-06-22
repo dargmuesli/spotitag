@@ -1,5 +1,6 @@
 module de.dargmuesli.spotitag {
     requires com.fasterxml.jackson.databind;
+    requires com.google.gson;
     requires java.desktop;
     requires java.logging;
     requires javafx.controls;

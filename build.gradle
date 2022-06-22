@@ -51,6 +51,7 @@ dependencies {
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
     implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:${kotlinCoroutineVersion}")
     implementation("org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}")
     implementation("org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}")

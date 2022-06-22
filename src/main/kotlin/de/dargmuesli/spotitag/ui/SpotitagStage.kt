@@ -35,7 +35,7 @@ class SpotitagStage(
 
             this.scene = scene
             this.title = MainApp.APPLICATION_TITLE + " - " + title
-//            this.icons.add(Image(javaClass.getResourceAsStream("/de/dargmuesli/spotitag/icons/icon.png")))
+            this.icons.add(Image(javaClass.getResourceAsStream("/de/dargmuesli/spotitag/icons/spotitag.png")))
             this.isAlwaysOnTop = isAlwaysOnTop
             this.initModality(modality)
 

@@ -27,8 +27,7 @@ class MainApp : Application() {
         }
 
         try {
-            val resources = ResourceBundle.getBundle("i18n", Locale.getDefault())
-            val dashboardLoader = FXMLLoader(MainApp::class.java.getResource("dashboard.fxml"), resources)
+            val dashboardLoader = FXMLLoader(MainApp::class.java.getResource("fxml/dashboard.fxml"), resources)
             val dashboard = dashboardLoader.load<Parent>()
             dashboardController = dashboardLoader.getController()
 
@@ -44,6 +43,7 @@ class MainApp : Application() {
     companion object {
         lateinit var stage: Stage
         lateinit var dashboardController: DashboardController
+        val resources: ResourceBundle = ResourceBundle.getBundle("i18n", Locale.getDefault())
 
         internal const val APPLICATION_TITLE = "Spotitag"
 
@@ -55,7 +55,3 @@ class MainApp : Application() {
         fun isStageInitialized() = this::stage.isInitialized
     }
 }
-
-//fun main() {
-//    Application.launch(MainApp::class.java)
-//}

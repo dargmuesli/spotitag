@@ -3,6 +3,7 @@ package de.dargmuesli.spotitag.ui.controller
 import com.mpatric.mp3agic.EncodedText
 import com.mpatric.mp3agic.ID3v23Tag
 import com.mpatric.mp3agic.Mp3File
+import de.dargmuesli.spotitag.MainApp
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
 import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
@@ -10,6 +11,7 @@ import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.state.SpotitagState
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
+import de.dargmuesli.spotitag.ui.SpotitagStage
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -18,6 +20,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.stage.DirectoryChooser
+import javafx.stage.Modality
 import javafx.stage.Stage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +64,15 @@ class DashboardController : CoroutineScope {
     fun initialize() {
         directoryTextField.text = SpotitagSettings.fileSystem.sourceDirectory
         isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded ?: false
+    }
+
+    @FXML
+    fun menuFileSettingsAction() {
+        SpotitagStage(
+            "/de/dargmuesli/spotitag/fxml/settings.fxml",
+            Modality.WINDOW_MODAL,
+            MainApp.resources.getString("settings")
+        ).show()
     }
 
     @FXML
