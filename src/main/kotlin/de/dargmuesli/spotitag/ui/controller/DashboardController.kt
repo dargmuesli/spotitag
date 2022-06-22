@@ -202,11 +202,23 @@ class DashboardController : CoroutineScope {
                         filesFoundWithSpotifyId++
                     }
                 } else if (file.isDirectory) {
-                    println("Directory " + file.name)
+                    if (SpotitagSettings.fileSystem.isSubDirectoryIncluded == true) {
+                        val x = scanFiles(file)
+
+                        filesFound += x[0]
+                        filesFoundWithSpotifyId += x[1]
+                        filesFoundWithSpotitagVersion += x[2]
+                        filesFoundWithSpotitagVersionNewest += x[3]
+                    }
                 }
             }
         }
 
-        return IntArray(4)
+        return intArrayOf(
+            filesFound,
+            filesFoundWithSpotifyId,
+            filesFoundWithSpotitagVersion,
+            filesFoundWithSpotitagVersionNewest
+        )
     }
 }
