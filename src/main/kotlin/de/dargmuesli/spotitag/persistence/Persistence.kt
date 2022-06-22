@@ -1,5 +1,6 @@
 package de.dargmuesli.spotitag.persistence
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.dargmuesli.spotitag.MainApp
@@ -12,6 +13,8 @@ import java.util.*
 import kotlin.system.exitProcess
 
 object Persistence {
+    var isInitialized = false
+
     private val appDataDirectory: Path
         get() {
             val os = System.getProperty("os.name").lowercase()
@@ -44,9 +47,13 @@ object Persistence {
                 exitProcess(0)
             }
         }
+
+        isInitialized = true
     }
 
     fun stateSave() {
+        if (!isInitialized) return
+
         if (!Files.exists(stateFile.parent)) {
             Files.createDirectories(stateFile.parent)
         }
