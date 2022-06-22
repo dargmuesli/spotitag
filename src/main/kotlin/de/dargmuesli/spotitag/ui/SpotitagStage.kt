@@ -50,7 +50,7 @@ class SpotitagStage(fxmlPath: String,
     companion object {
         internal fun makeSpotitagStage(stage: Stage) {
             stage.title = MainApp.APPLICATION_TITLE
-//            stage.icons.add(Image(MainApp().javaClass.getResourceAsStream("/de/dargmuesli/spotitag/icons/icon.png")))
+            stage.icons.add(Image(MainApp().javaClass.getResourceAsStream("/de/dargmuesli/spotitag/icons/spotitag.png")))
         }
     }
 }
