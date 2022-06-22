@@ -3,7 +3,12 @@ package de.dargmuesli.spotitag.ui.controller
 import com.mpatric.mp3agic.EncodedText
 import com.mpatric.mp3agic.ID3v23Tag
 import com.mpatric.mp3agic.Mp3File
+import de.dargmuesli.spotitag.model.filesystem.MusicFile
+import de.dargmuesli.spotitag.model.music.Album
+import de.dargmuesli.spotitag.model.music.Artist
+import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.Persistence
+import de.dargmuesli.spotitag.persistence.state.SpotitagState
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
@@ -35,7 +40,7 @@ class DashboardController : CoroutineScope {
     private val directoryChooser = DirectoryChooser()
 
     @FXML
-    private lateinit var directoryChosenTextField: TextField
+    private lateinit var directoryTextField: TextField
 
     @FXML
     private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
@@ -54,7 +59,7 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun initialize() {
-        directoryChosenTextField.text = SpotitagSettings.fileSystem.sourceDirectory
+        directoryTextField.text = SpotitagSettings.fileSystem.sourceDirectory
         isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded ?: false
     }
 
@@ -67,8 +72,13 @@ class DashboardController : CoroutineScope {
 
         val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
 
-        directoryChosenTextField.text = file.absolutePath
+        directoryTextField.text = file.absolutePath
         SpotitagSettings.fileSystem.sourceDirectory = file.absolutePath
+    }
+
+    @FXML
+    fun onDirectoryInput() {
+        SpotitagSettings.fileSystem.sourceDirectory = directoryTextField.text
     }
 
     @FXML
@@ -110,14 +120,14 @@ class DashboardController : CoroutineScope {
         var filesFoundWithSpotitagVersion = 0
         var filesFoundWithSpotitagVersionNewest = 0
 
-        if (listOfFiles != null) {
-            for (i in listOfFiles.indices) {
-                if (listOfFiles[i].isFile) {
-                    println("File " + listOfFiles[i].name)
+        listOfFiles?.let {
+            for (file in listOfFiles) {
+                if (file.isFile) {
+                    println("File " + file.name)
 
                     filesFound++
 
-                    val mp3File = Mp3File(listOfFiles[i])
+                    val mp3File = Mp3File(file)
 
                     if (!mp3File.hasId3v1Tag()) {
                         logger.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
@@ -139,6 +149,21 @@ class DashboardController : CoroutineScope {
                         "Version"
                     )?.value
 
+                    SpotitagState.data.fileSystemData.trackData[file.absolutePath] =
+                        MusicFile(
+                            Track(
+                                album = Album(
+                                    artists = listOf(Artist(name = id3v2Tag.albumArtist)),
+                                    name = id3v2Tag.album
+                                ),
+                                artists = listOf(Artist(name = id3v2Tag.artist)),
+                                durationMs = mp3File.lengthInMilliseconds,
+                                id = id3v2Tag.audioSourceUrl,
+                                name = id3v2Tag.title
+                            ),
+                            version?.toString()
+                        )
+
                     if (version != null) {
                         filesFoundWithSpotitagVersion++
 
@@ -150,8 +175,8 @@ class DashboardController : CoroutineScope {
                     if (id3v2Tag.audioSourceUrl !== null) {
                         filesFoundWithSpotifyId++
                     }
-                } else if (listOfFiles[i].isDirectory) {
-                    println("Directory " + listOfFiles[i].name)
+                } else if (file.isDirectory) {
+                    println("Directory " + file.name)
                 }
             }
         }

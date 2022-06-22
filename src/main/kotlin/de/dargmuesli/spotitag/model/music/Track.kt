@@ -1,12 +1,13 @@
 package de.dargmuesli.spotitag.model.music
 
 data class Track(
-    val album: Album = Album(),
-    val artists: List<Artist> = listOf(),
-    val durationMs: Int = -1,
-    val name: String = String()
+    val album: Album? = null,
+    val artists: List<Artist>? = null,
+    val durationMs: Long? = null,
+    val id: String? = null,
+    val name: String? = null
 ) {
     override fun toString(): String {
-        return name
+        return name ?: super.toString()
     }
 }

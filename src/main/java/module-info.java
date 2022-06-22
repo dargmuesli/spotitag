@@ -14,8 +14,12 @@ module de.dargmuesli.spotitag {
     requires org.kordamp.ikonli.javafx;
     requires se.michaelthelin.spotify;
 
+    opens de.dargmuesli.spotitag.model.enums to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.model.filesystem to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.model.music to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state.data to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.persistence.state.data.providers.file_system to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state.data.providers.spotify to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state.settings to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state.settings.file_system to com.fasterxml.jackson.databind;

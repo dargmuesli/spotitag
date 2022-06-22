@@ -32,7 +32,7 @@ object Persistence {
         versionProperties.load(this.javaClass.getResourceAsStream("/version.properties"))
     }
 
-    fun getVersion() : String = versionProperties.getProperty("version")
+    fun getVersion(): String = versionProperties.getProperty("version")
 
     fun stateLoad() {
         if (Files.exists(stateFile)) {

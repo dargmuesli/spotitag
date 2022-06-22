@@ -6,7 +6,5 @@ import de.dargmuesli.spotitag.persistence.state.data.providers.IProviderData
 import kotlin.properties.Delegates
 
 object FileSystemData : IProviderData<MusicFile> {
-    override var trackData: Map<String, MusicFile>? by Delegates.observable(null) { _, _, _ ->
-        Persistence.stateSave()
-    }
+    override var trackData: MutableMap<String, MusicFile> = mutableMapOf()
 }

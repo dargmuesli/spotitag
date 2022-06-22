@@ -1,10 +1,11 @@
 package de.dargmuesli.spotitag.model.music
 
 data class Artist(
-    val genres: List<String> = listOf(),
-    val name: String = String()
+    val genres: List<String>? = null,
+    val id: String? = null,
+    val name: String? = null
 ) {
     override fun toString(): String {
-        return name
+        return name ?: super.toString()
     }
 }

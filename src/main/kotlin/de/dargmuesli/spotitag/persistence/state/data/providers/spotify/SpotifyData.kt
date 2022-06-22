@@ -6,9 +6,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track
 import kotlin.properties.Delegates
 
 object SpotifyData : IProviderData<Track> {
-    override var trackData: Map<String, Track>? by Delegates.observable(null) { _, _, _ ->
-        Persistence.stateSave()
-    }
+    override var trackData: MutableMap<String, Track> = mutableMapOf()
 
     var accessToken: String? by Delegates.observable(null) { _, _, _ ->
         Persistence.stateSave()

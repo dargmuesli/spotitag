@@ -4,12 +4,13 @@ import de.dargmuesli.spotitag.model.enums.AlbumType
 
 data class Album(
     val albumType: AlbumType = AlbumType.ALBUM,
-    val artists: List<Artist> = listOf(),
-    val genres: List<String> = listOf(),
-    val name: String = String(),
-    val tracks: List<Track> = listOf()
+    val artists: List<Artist>? = null,
+    val genres: List<String>? = null,
+    val id: String? = null,
+    val name: String? = null,
+    val tracks: List<Track>? = null
 ) {
     override fun toString(): String {
-        return name
+        return name ?: super.toString()
     }
 }
