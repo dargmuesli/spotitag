@@ -2,4 +2,4 @@ package de.dargmuesli.spotitag.model.filesystem
 
 import de.dargmuesli.spotitag.model.music.Track
 
-class MusicFile(val track: Track, val spotitagVersion: String?)
+data class MusicFile(val track: Track = Track(), val spotitagVersion: String? = null)

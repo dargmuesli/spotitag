@@ -28,6 +28,7 @@ object Persistence {
             }
         }
     private val jackson: ObjectMapper = ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
+        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
     private val stateFile = appDataDirectory.resolve("state.json")
     private val versionProperties = Properties()
 
