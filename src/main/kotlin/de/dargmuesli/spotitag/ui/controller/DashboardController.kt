@@ -3,6 +3,7 @@ package de.dargmuesli.spotitag.ui.controller
 import com.mpatric.mp3agic.EncodedText
 import com.mpatric.mp3agic.ID3v23Tag
 import com.mpatric.mp3agic.Mp3File
+import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
@@ -141,7 +142,7 @@ class DashboardController : CoroutineScope {
                     if (version != null) {
                         filesFoundWithSpotitagVersion++
 
-                        if (version.toString() == "1.0") {
+                        if (version.toString() == Persistence.getVersion()) {
                             filesFoundWithSpotitagVersionNewest++
                         }
                     }

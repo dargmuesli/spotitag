@@ -8,6 +8,7 @@ import de.dargmuesli.spotitag.ui.SpotitagNotification
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 import kotlin.system.exitProcess
 
 object Persistence {
@@ -25,6 +26,13 @@ object Persistence {
         }
     private val jackson: ObjectMapper = ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
     private val stateFile = appDataDirectory.resolve("state.json")
+    private val versionProperties = Properties()
+
+    init {
+        versionProperties.load(this.javaClass.getResourceAsStream("/version.properties"))
+    }
+
+    fun getVersion() : String = versionProperties.getProperty("version")
 
     fun stateLoad() {
         if (Files.exists(stateFile)) {
