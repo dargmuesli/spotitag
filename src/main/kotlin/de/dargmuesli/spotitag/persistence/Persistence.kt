@@ -40,7 +40,7 @@ object Persistence {
                 SpotitagStateWrapper.state =
                     jackson.readValue(String(Files.readAllBytes(stateFile)), SpotitagStateWrapper.javaClass).state
             } catch (e: Exception) {
-                SpotitagNotification.displayError("Loading application settings failed!", e)
+                SpotitagNotification.error("Loading application settings failed!", e)
                 exitProcess(0)
             }
         }

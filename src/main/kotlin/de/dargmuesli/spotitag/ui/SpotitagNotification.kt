@@ -2,22 +2,36 @@ package de.dargmuesli.spotitag.ui
 
 import de.dargmuesli.spotitag.ui.controller.NotificationController
 import javafx.stage.Modality
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.javafx.JavaFx
+import kotlinx.coroutines.javafx.JavaFxDispatcher
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-object SpotitagNotification {
-    fun displayError(text: String, e: Exception) {
-        LogManager.getLogger().error(text, e)
-        displayPopup(text, "Error")
+object SpotitagNotification : CoroutineScope {
+    private val LOGGER: Logger = LogManager.getLogger()
+
+    fun error(text: String, e: Exception? = null) {
+        LOGGER.error(text, e)
+        launch(Dispatchers.JavaFx) {
+            displayPopup(text, "Error")
+        }
     }
 
-    fun displayInformation(text: String) {
-        LogManager.getLogger().info(text)
-        displayPopup(text, "Information")
+    fun info(text: String) {
+        LOGGER.info(text)
+        launch(Dispatchers.JavaFx) {
+            displayPopup(text, "Information")
+        }
     }
 
-    fun displayWarning(text: String, e: Exception) {
-        LogManager.getLogger().warn(text, e)
-        displayPopup(text, "Warning")
+    fun warn(text: String, e: Exception? = null) {
+        LOGGER.warn(text, e)
+        launch(Dispatchers.JavaFx) {
+            displayPopup(text, "Warning")
+        }
     }
 
     private fun displayPopup(text: String, title: String = "Notification") {
@@ -29,4 +43,7 @@ object SpotitagNotification {
             true
         ).showAndWait()
     }
+
+    override val coroutineContext: JavaFxDispatcher
+        get() = Dispatchers.JavaFx
 }

@@ -11,6 +11,7 @@ import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.state.SpotitagState
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
+import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
@@ -28,6 +29,7 @@ import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.javafx.JavaFxDispatcher
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.io.File
 
 
@@ -38,6 +40,7 @@ class DashboardController : CoroutineScope {
 
     companion object {
         const val IS_SYNCHRONIZED = true
+        val LOGGER: Logger = LogManager.getLogger()
     }
 
     private val directoryChooser = DirectoryChooser()
@@ -100,9 +103,21 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun onScan() {
-        launch(Dispatchers.IO) {
-            SpotitagSettings.fileSystem.sourceDirectory?.let {
-                val x = scanFiles(File(it))
+        SpotitagSettings.fileSystem.sourceDirectory?.let {
+            val directory = File(it)
+
+            if (!directory.exists()) {
+                SpotitagNotification.error("Path does not exist!")
+                return@let
+            }
+
+            if (!directory.isDirectory) {
+                SpotitagNotification.error("Path is not a directory!")
+                return@let
+            }
+
+            launch(Dispatchers.IO) {
+                val x = scanFiles(directory)
 
                 val filesFound = x[0]
                 val filesFoundWithSpotifyId = x[1]
@@ -124,7 +139,6 @@ class DashboardController : CoroutineScope {
     }
 
     private fun scanFiles(folder: File): IntArray {
-        val logger = LogManager.getLogger()
         val listOfFiles = folder.listFiles()
 
         var filesFound = 0
@@ -142,7 +156,7 @@ class DashboardController : CoroutineScope {
                     val mp3File = Mp3File(file)
 
                     if (!mp3File.hasId3v1Tag()) {
-                        logger.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
+                        LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
                     }
 
                     if (!mp3File.hasId3v2Tag()) {
@@ -152,7 +166,7 @@ class DashboardController : CoroutineScope {
                     val id3v2Tag = mp3File.id3v2Tag
 
                     if (id3v2Tag.version != "4.0") {
-                        logger.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
+                        LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
                     }
 
                     val version: EncodedText? = ID3v2TXXXFrameData.extract(
