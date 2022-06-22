@@ -1,6 +1,8 @@
 package de.dargmuesli.spotitag.ui.controller
 
-import com.mpatric.mp3agic.*
+import com.mpatric.mp3agic.EncodedText
+import com.mpatric.mp3agic.ID3v23Tag
+import com.mpatric.mp3agic.Mp3File
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import javafx.event.ActionEvent
@@ -11,9 +13,11 @@ import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.stage.DirectoryChooser
 import javafx.stage.Stage
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.javafx.JavaFx
 import kotlinx.coroutines.javafx.JavaFxDispatcher
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import java.io.File
 
@@ -50,13 +54,16 @@ class DashboardController : CoroutineScope {
     @FXML
     fun initialize() {
         directoryChosenTextField.text = SpotitagSettings.fileSystem.sourceDirectory
-        isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded
+        isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded ?: false
     }
 
     @FXML
     fun chooseDirectory(actionEvent: ActionEvent) {
-        val sourceDirectory = File(SpotitagSettings.fileSystem.sourceDirectory)
-        directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
+        SpotitagSettings.fileSystem.sourceDirectory?.let {
+            val sourceDirectory = File(it)
+            directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
+        }
+
         val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
 
         directoryChosenTextField.text = file.absolutePath
@@ -64,29 +71,31 @@ class DashboardController : CoroutineScope {
     }
 
     @FXML
-    fun onSubdirectoryInclusionToggle(actionEvent: ActionEvent) {
+    fun onSubdirectoryInclusionToggle() {
         SpotitagSettings.fileSystem.isSubDirectoryIncluded = isSubdirectoryIncludedCheckBox.isSelected
     }
 
     @FXML
     fun onScan() {
         launch(Dispatchers.IO) {
-            val x = scanFiles(File(SpotitagSettings.fileSystem.sourceDirectory))
+            SpotitagSettings.fileSystem.sourceDirectory?.let {
+                val x = scanFiles(File(it))
 
-            val filesFound = x[0]
-            val filesFoundWithSpotifyId = x[1]
-            val filesFoundWithSpotitagVersion = x[2]
-            val filesFoundWithSpotitagVersionNewest = x[3]
+                val filesFound = x[0]
+                val filesFoundWithSpotifyId = x[1]
+                val filesFoundWithSpotitagVersion = x[2]
+                val filesFoundWithSpotitagVersionNewest = x[3]
 
-            launch(Dispatchers.JavaFx) {
-                println("filesFound $filesFound")
-                filesFoundLabel.text = filesFound.toString()
-                println("filesFoundWithSpotifyId $filesFoundWithSpotifyId")
-                filesFoundWithSpotifyIdLabel.text = filesFoundWithSpotifyId.toString()
-                println("filesFoundWithSpotitagVersion $filesFoundWithSpotitagVersion")
-                filesFoundWithSpotitagVersionLabel.text = filesFoundWithSpotitagVersion.toString()
-                println("filesFoundWithNewestSpotitagVersion $filesFoundWithSpotitagVersionNewest")
-                filesFoundWithSpotitagVersionNewestLabel.text = filesFoundWithSpotitagVersionNewest.toString()
+                launch(Dispatchers.JavaFx) {
+                    println("filesFound $filesFound")
+                    filesFoundLabel.text = filesFound.toString()
+                    println("filesFoundWithSpotifyId $filesFoundWithSpotifyId")
+                    filesFoundWithSpotifyIdLabel.text = filesFoundWithSpotifyId.toString()
+                    println("filesFoundWithSpotitagVersion $filesFoundWithSpotitagVersion")
+                    filesFoundWithSpotitagVersionLabel.text = filesFoundWithSpotitagVersion.toString()
+                    println("filesFoundWithNewestSpotitagVersion $filesFoundWithSpotitagVersionNewest")
+                    filesFoundWithSpotitagVersionNewestLabel.text = filesFoundWithSpotitagVersionNewest.toString()
+                }
             }
         }
     }

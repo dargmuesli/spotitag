@@ -1,10 +1,5 @@
 package de.dargmuesli.spotitag.provider.spotify
 
-import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack
-import de.dargmuesli.spotitag.model.enums.AlbumType
-import de.dargmuesli.spotitag.model.music.Album
-import de.dargmuesli.spotitag.model.music.Artist
-import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.state.SpotitagState
 import de.dargmuesli.spotitag.provider.ISpotitagProviderAuthorizable
 

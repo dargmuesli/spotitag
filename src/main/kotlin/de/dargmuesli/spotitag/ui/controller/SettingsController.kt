@@ -30,7 +30,7 @@ class SettingsController : Initializable {
 
     override fun initialize(url: URL?, rb: ResourceBundle?) {
         val uriToEtterMap = mapOf(
-                spotifyRedirectUriTextField to Etter({ SpotifySettings.redirectUri }, { SpotifySettings.redirectUri = it })
+            spotifyRedirectUriTextField to Etter({ SpotifySettings.redirectUri }, { SpotifySettings.redirectUri = it })
         )
 
         for ((textField, etter) in uriToEtterMap) {
@@ -39,15 +39,22 @@ class SettingsController : Initializable {
         }
 
         val txtToEtterMap = mapOf(
-                spotifyClientIdTextField to Etter({ SpotifySettings.clientId }, { SpotifySettings.clientId = it }),
-                spotifyClientSecretTextField to Etter({ SpotifySettings.clientSecret }, { SpotifySettings.clientSecret = it })
+            spotifyClientIdTextField to Etter({ SpotifySettings.clientId }, { SpotifySettings.clientId = it }),
+            spotifyClientSecretTextField to Etter(
+                { SpotifySettings.clientSecret },
+                { SpotifySettings.clientSecret = it })
         )
 
         for ((textField, etter) in txtToEtterMap) {
             textField.text = etter.getter.invoke()
             textField.textProperty().addListener { _, _, newText -> etter.setter.invoke(newText) }
 
-            if (textField in setOf(spotifyClientIdTextField, spotifyClientSecretTextField, spotifyRedirectUriTextField)) {
+            if (textField in setOf(
+                    spotifyClientIdTextField,
+                    spotifyClientSecretTextField,
+                    spotifyRedirectUriTextField
+                )
+            ) {
                 textField.textProperty().addListener { _, _, _ ->
                     btnOpenAuthorization.isDisable = !isAuthorizable()
                 }
@@ -63,8 +70,9 @@ class SettingsController : Initializable {
 
     private fun isAuthorizable(): Boolean {
         if (spotifyClientIdTextField.text == ""
-                || spotifyClientSecretTextField.text == ""
-                || spotifyRedirectUriTextField.text == "") {
+            || spotifyClientSecretTextField.text == ""
+            || spotifyRedirectUriTextField.text == ""
+        ) {
             return false
         }
 
