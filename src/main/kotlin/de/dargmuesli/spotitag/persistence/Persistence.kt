@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import de.dargmuesli.spotitag.MainApp
-import de.dargmuesli.spotitag.persistence.state.SpotitagStateWrapper
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import java.nio.file.Files
 import java.nio.file.Path
@@ -15,7 +14,7 @@ import kotlin.system.exitProcess
 object Persistence {
     var isInitialized = false
 
-    private val appDataDirectory: Path
+    val configDirectory: Path
         get() {
             val os = System.getProperty("os.name").lowercase()
 
@@ -27,9 +26,16 @@ object Persistence {
                 Paths.get("")
             }
         }
+    val cacheDirectory: Path = Paths.get(System.getProperty("user.home"), ".cache", MainApp.APPLICATION_TITLE)
+    val localDirectory: Path = Paths.get(System.getProperty("user.home"), ".local", "share", MainApp.APPLICATION_TITLE)
+    val tmpDirectory: Path = Paths.get(System.getProperty("java.io.tmpdir"), MainApp.APPLICATION_TITLE)
+    private val fileMap = hashMapOf(
+        Pair(cacheDirectory, PersistenceTypes.CACHE),
+        Pair(configDirectory, PersistenceTypes.CONFIG),
+        Pair(localDirectory, PersistenceTypes.STATE)
+    )
     private val jackson: ObjectMapper = ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-    private val stateFile = appDataDirectory.resolve("state.json")
     private val versionProperties = Properties()
 
     init {
@@ -38,31 +44,37 @@ object Persistence {
 
     fun getVersion(): String = versionProperties.getProperty("version")
 
-    fun stateLoad() {
-        if (Files.exists(stateFile)) {
-            try {
-                SpotitagStateWrapper.state =
-                    jackson.readValue(String(Files.readAllBytes(stateFile)), SpotitagStateWrapper.javaClass).state
-            } catch (e: Exception) {
-                SpotitagNotification.error("Loading application settings failed!", e)
-                exitProcess(0)
+    fun load() {
+        for ((directory, type) in fileMap) {
+            val filePath = directory.resolve("${type.type}.json")
+            if (Files.exists(filePath)) {
+                try {
+                    PersistenceWrapper[type] =
+                        jackson.readValue(
+                            String(Files.readAllBytes(filePath)),
+                            PersistenceWrapper[type].javaClass
+                        )
+                } catch (e: Exception) {
+                    SpotitagNotification.error("Loading application data failed!", e)
+                    exitProcess(0)
+                }
             }
         }
 
         isInitialized = true
     }
 
-    fun stateSave() {
+    fun save() {
         if (!isInitialized) return
 
-        if (!Files.exists(stateFile.parent)) {
-            Files.createDirectories(stateFile.parent)
+        for ((directory, type) in fileMap) {
+            val filePath = directory.resolve("${type.type}.json")
+
+            if (!Files.exists(filePath.parent)) {
+                Files.createDirectories(filePath.parent)
+            }
+
+            Files.writeString(filePath, jackson.writeValueAsString(PersistenceWrapper[type]))
         }
-
-        Files.writeString(stateFile, jackson.writeValueAsString(SpotitagStateWrapper))
-    }
-
-    fun getCacheDirectory(): Path {
-        return Paths.get(System.getProperty("java.io.tmpdir"), MainApp.APPLICATION_TITLE)
     }
 }

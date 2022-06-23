@@ -15,14 +15,14 @@ import kotlin.system.exitProcess
 
 class MainApp : Application() {
     override fun start(stage: Stage) {
-        Persistence.stateLoad()
+        Persistence.load()
 
         SpotitagStage.makeSpotitagStage(stage)
 
         Companion.stage = stage
 
         stage.setOnCloseRequest {
-            Persistence.stateSave()
+            Persistence.save()
             exitProcess(0)
         }
 

@@ -8,9 +8,12 @@ import de.dargmuesli.spotitag.model.filesystem.MusicFile
 import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.model.music.Track
-import de.dargmuesli.spotitag.persistence.state.SpotitagState
-import de.dargmuesli.spotitag.persistence.state.data.SpotitagData
-import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
+import de.dargmuesli.spotitag.persistence.cache.providers.FileSystemCache
+import de.dargmuesli.spotitag.persistence.cache.providers.SpotifyCache
+import de.dargmuesli.spotitag.persistence.config.providers.FileSystemConfig
+import de.dargmuesli.spotitag.persistence.state.providers.FileSystemState
+import de.dargmuesli.spotitag.provider.FileSystemProvider
+import de.dargmuesli.spotitag.provider.SpotifyProvider
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
@@ -69,15 +72,15 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun initialize() {
-        directoryTextField.text = SpotitagSettings.fileSystem.sourceDirectory
-        isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded ?: false
+        directoryTextField.text = FileSystemConfig.sourceDirectory
+        isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded ?: false
 
         arrayOf(
-            Pair(SpotitagData.fileSystemData.filesFound, filesFoundLabel),
-            Pair(SpotitagData.fileSystemData.filesFoundWithSpotifyId, filesFoundWithSpotifyIdLabel),
-            Pair(SpotitagData.fileSystemData.filesFoundWithSpotitagVersion, filesFoundWithSpotitagVersionLabel),
+            Pair(FileSystemState.filesFound, filesFoundLabel),
+            Pair(FileSystemState.filesFoundWithSpotifyId, filesFoundWithSpotifyIdLabel),
+            Pair(FileSystemState.filesFoundWithSpotitagVersion, filesFoundWithSpotitagVersionLabel),
             Pair(
-                SpotitagData.fileSystemData.filesFoundWithSpotitagVersionNewest,
+                FileSystemState.filesFoundWithSpotitagVersionNewest,
                 filesFoundWithSpotitagVersionNewestLabel
             )
         ).forEach {
@@ -100,7 +103,7 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun chooseDirectory(actionEvent: ActionEvent) {
-        SpotitagSettings.fileSystem.sourceDirectory?.let {
+        FileSystemConfig.sourceDirectory?.let {
             val sourceDirectory = File(it)
             directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
         }
@@ -108,22 +111,22 @@ class DashboardController : CoroutineScope {
         val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
 
         directoryTextField.text = file.absolutePath
-        SpotitagSettings.fileSystem.sourceDirectory = file.absolutePath
+        FileSystemConfig.sourceDirectory = file.absolutePath
     }
 
     @FXML
     fun onDirectoryInput() {
-        SpotitagSettings.fileSystem.sourceDirectory = directoryTextField.text
+        FileSystemConfig.sourceDirectory = directoryTextField.text
     }
 
     @FXML
     fun onSubdirectoryInclusionToggle() {
-        SpotitagSettings.fileSystem.isSubDirectoryIncluded = isSubdirectoryIncludedCheckBox.isSelected
+        FileSystemConfig.isSubDirectoryIncluded = isSubdirectoryIncludedCheckBox.isSelected
     }
 
     @FXML
     fun onScan() {
-        SpotitagSettings.fileSystem.sourceDirectory?.let {
+        FileSystemConfig.sourceDirectory?.let {
             val file = File(it)
 
             if (!file.exists()) {
@@ -136,9 +139,9 @@ class DashboardController : CoroutineScope {
                 return@let
             }
 
-            launch(Dispatchers.IO) {
-                scanFiles(file = file, fileCountTotal = countFiles(file))
-            }
+//            launch(Dispatchers.IO) {
+            scanFiles(file = file, fileCountTotal = countFiles(file))
+//            }
         }
     }
 
@@ -150,7 +153,7 @@ class DashboardController : CoroutineScope {
             for (currentFile in listOfFiles) {
                 if (currentFile.isFile && currentFile.extension == "mp3") {
                     count++
-                } else if (currentFile.isDirectory && SpotitagSettings.fileSystem.isSubDirectoryIncluded == true) {
+                } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded == true) {
                     count += countFiles(currentFile)
                 }
             }
@@ -160,50 +163,29 @@ class DashboardController : CoroutineScope {
     }
 
     private fun scanFiles(file: File, fileCountCurrent: Int = 0, fileCountTotal: Int? = null) {
+        SpotifyProvider.authorize()
+
         val listOfFiles = file.listFiles()
 
         listOfFiles?.forEachIndexed { index, currentFile ->
-//            for (currentFile in listOfFiles) {
             if (currentFile.isFile && currentFile.extension == "mp3") {
-                println("File " + currentFile.name)
+                val text = "file \"${currentFile.name}\""
 
-                val mp3File = Mp3File(currentFile)
-
-                if (!mp3File.hasId3v1Tag()) {
-                    LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
+                if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
+                    LOGGER.debug("Skipping $text as it's cached.")
+                    return@forEachIndexed
+                } else {
+                    LOGGER.info("Processing $text...")
                 }
 
-                if (!mp3File.hasId3v2Tag()) {
-                    mp3File.id3v2Tag = ID3v23Tag()
+                val musicFile = FileSystemProvider.getMusicFile(currentFile).also {
+                    FileSystemCache.trackData[it.path] = it
                 }
 
-                val id3v2Tag = mp3File.id3v2Tag
-
-                if (id3v2Tag.version != "4.0") {
-                    LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
+                SpotifyProvider.getSpotifyTrack(musicFile)?.also {
+                    SpotifyCache.trackData[it.id] = it
                 }
-
-                val version: EncodedText? = ID3v2TXXXFrameData.extract(
-                    id3v2Tag.frameSets,
-                    IS_SYNCHRONIZED,
-                    "Version"
-                )?.value
-
-                SpotitagState.data.fileSystemData.trackData[currentFile.absolutePath] =
-                    MusicFile(
-                        Track(
-                            album = Album(
-                                artists = id3v2Tag.albumArtist?.let { listOf(Artist(name = id3v2Tag.albumArtist)) },
-                                name = id3v2Tag.album
-                            ),
-                            artists = id3v2Tag.artist?.let { listOf(Artist(name = id3v2Tag.artist)) },
-                            durationMs = mp3File.lengthInMilliseconds,
-                            id = id3v2Tag.audioSourceUrl,
-                            name = id3v2Tag.title
-                        ),
-                        version?.toString()
-                    )
-            } else if (currentFile.isDirectory && SpotitagSettings.fileSystem.isSubDirectoryIncluded == true) {
+            } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded == true) {
                 scanFiles(currentFile, fileCountCurrent + index + 1, fileCountTotal)
             }
 

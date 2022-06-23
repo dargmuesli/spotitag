@@ -14,7 +14,7 @@
         <opaqueInsets>
             <Insets/>
         </opaqueInsets>
-        <Label styleClass="h1" text="Settings"/>
+        <Label styleClass="h1" text="%settings"/>
         <VBox layoutX="10.0" layoutY="32.0">
             <opaqueInsets>
                 <Insets/>
@@ -35,8 +35,6 @@
                 <rowConstraints>
                     <RowConstraints/>
                     <RowConstraints/>
-                    <RowConstraints/>
-                    <RowConstraints/>
                 </rowConstraints>
                 <opaqueInsets>
                     <Insets/>
@@ -52,13 +50,6 @@
                        GridPane.rowIndex="1"/>
                 <TextField fx:id="spotifyClientSecretTextField" prefHeight="25.0"
                            GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS"/>
-                <Label styleClass="bold" text="Redirect URI" GridPane.columnIndex="0"
-                       GridPane.rowIndex="2"/>
-                <TextField fx:id="spotifyRedirectUriTextField" prefHeight="25.0"
-                           GridPane.columnIndex="1" GridPane.rowIndex="2" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnOpenAuthorization" disable="true" mnemonicParsing="false"
-                        onAction="#openAuthorization" text="Open Authorization" GridPane.columnIndex="1"
-                        GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
             </GridPane>
         </VBox>
     </VBox>
