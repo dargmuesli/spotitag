@@ -8,8 +8,8 @@ import de.dargmuesli.spotitag.model.filesystem.MusicFile
 import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.model.music.Track
-import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.state.SpotitagState
+import de.dargmuesli.spotitag.persistence.state.data.SpotitagData
 import de.dargmuesli.spotitag.persistence.state.settings.SpotitagSettings
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
@@ -71,6 +71,22 @@ class DashboardController : CoroutineScope {
     fun initialize() {
         directoryTextField.text = SpotitagSettings.fileSystem.sourceDirectory
         isSubdirectoryIncludedCheckBox.isSelected = SpotitagSettings.fileSystem.isSubDirectoryIncluded ?: false
+
+        arrayOf(
+            Pair(SpotitagData.fileSystemData.filesFound, filesFoundLabel),
+            Pair(SpotitagData.fileSystemData.filesFoundWithSpotifyId, filesFoundWithSpotifyIdLabel),
+            Pair(SpotitagData.fileSystemData.filesFoundWithSpotitagVersion, filesFoundWithSpotitagVersionLabel),
+            Pair(
+                SpotitagData.fileSystemData.filesFoundWithSpotitagVersionNewest,
+                filesFoundWithSpotitagVersionNewestLabel
+            )
+        ).forEach {
+            it.first.addListener { _ ->
+                launch(Dispatchers.JavaFx) {
+                    it.second.text = it.first.value.toString()
+                }
+            }
+        }
     }
 
     @FXML
@@ -121,23 +137,7 @@ class DashboardController : CoroutineScope {
             }
 
             launch(Dispatchers.IO) {
-                val x = scanFiles(file = file, fileCountTotal = countFiles(file))
-
-                val filesFound = x[0]
-                val filesFoundWithSpotifyId = x[1]
-                val filesFoundWithSpotitagVersion = x[2]
-                val filesFoundWithSpotitagVersionNewest = x[3]
-
-                launch(Dispatchers.JavaFx) {
-                    println("filesFound $filesFound")
-                    filesFoundLabel.text = filesFound.toString()
-                    println("filesFoundWithSpotifyId $filesFoundWithSpotifyId")
-                    filesFoundWithSpotifyIdLabel.text = filesFoundWithSpotifyId.toString()
-                    println("filesFoundWithSpotitagVersion $filesFoundWithSpotitagVersion")
-                    filesFoundWithSpotitagVersionLabel.text = filesFoundWithSpotitagVersion.toString()
-                    println("filesFoundWithNewestSpotitagVersion $filesFoundWithSpotitagVersionNewest")
-                    filesFoundWithSpotitagVersionNewestLabel.text = filesFoundWithSpotitagVersionNewest.toString()
-                }
+                scanFiles(file = file, fileCountTotal = countFiles(file))
             }
         }
     }
@@ -159,89 +159,57 @@ class DashboardController : CoroutineScope {
         return count
     }
 
-    private fun scanFiles(file: File, fileCountCurrent: Int = 0, fileCountTotal: Int? = null): IntArray {
+    private fun scanFiles(file: File, fileCountCurrent: Int = 0, fileCountTotal: Int? = null) {
         val listOfFiles = file.listFiles()
 
-        var filesFound = 0
-        var filesFoundWithSpotifyId = 0
-        var filesFoundWithSpotitagVersion = 0
-        var filesFoundWithSpotitagVersionNewest = 0
+        listOfFiles?.forEachIndexed { index, currentFile ->
+//            for (currentFile in listOfFiles) {
+            if (currentFile.isFile && currentFile.extension == "mp3") {
+                println("File " + currentFile.name)
 
-        listOfFiles?.let {
-            for (currentFile in listOfFiles) {
-                if (currentFile.isFile && currentFile.extension == "mp3") {
-                    println("File " + currentFile.name)
+                val mp3File = Mp3File(currentFile)
 
-                    filesFound++
+                if (!mp3File.hasId3v1Tag()) {
+                    LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
+                }
 
-                    val mp3File = Mp3File(currentFile)
+                if (!mp3File.hasId3v2Tag()) {
+                    mp3File.id3v2Tag = ID3v23Tag()
+                }
 
-                    if (!mp3File.hasId3v1Tag()) {
-                        LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
-                    }
+                val id3v2Tag = mp3File.id3v2Tag
 
-                    if (!mp3File.hasId3v2Tag()) {
-                        mp3File.id3v2Tag = ID3v23Tag()
-                    }
+                if (id3v2Tag.version != "4.0") {
+                    LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
+                }
 
-                    val id3v2Tag = mp3File.id3v2Tag
+                val version: EncodedText? = ID3v2TXXXFrameData.extract(
+                    id3v2Tag.frameSets,
+                    IS_SYNCHRONIZED,
+                    "Version"
+                )?.value
 
-                    if (id3v2Tag.version != "4.0") {
-                        LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
-                    }
-
-                    val version: EncodedText? = ID3v2TXXXFrameData.extract(
-                        id3v2Tag.frameSets,
-                        IS_SYNCHRONIZED,
-                        "Version"
-                    )?.value
-
-                    SpotitagState.data.fileSystemData.trackData[currentFile.absolutePath] =
-                        MusicFile(
-                            Track(
-                                album = Album(
-                                    artists = id3v2Tag.albumArtist?.let { listOf(Artist(name = id3v2Tag.albumArtist)) },
-                                    name = id3v2Tag.album
-                                ),
-                                artists = id3v2Tag.artist?.let { listOf(Artist(name = id3v2Tag.artist)) },
-                                durationMs = mp3File.lengthInMilliseconds,
-                                id = id3v2Tag.audioSourceUrl,
-                                name = id3v2Tag.title
+                SpotitagState.data.fileSystemData.trackData[currentFile.absolutePath] =
+                    MusicFile(
+                        Track(
+                            album = Album(
+                                artists = id3v2Tag.albumArtist?.let { listOf(Artist(name = id3v2Tag.albumArtist)) },
+                                name = id3v2Tag.album
                             ),
-                            version?.toString()
-                        )
+                            artists = id3v2Tag.artist?.let { listOf(Artist(name = id3v2Tag.artist)) },
+                            durationMs = mp3File.lengthInMilliseconds,
+                            id = id3v2Tag.audioSourceUrl,
+                            name = id3v2Tag.title
+                        ),
+                        version?.toString()
+                    )
+            } else if (currentFile.isDirectory && SpotitagSettings.fileSystem.isSubDirectoryIncluded == true) {
+                scanFiles(currentFile, fileCountCurrent + index + 1, fileCountTotal)
+            }
 
-                    if (version != null) {
-                        filesFoundWithSpotitagVersion++
-
-                        if (version.toString() == Persistence.getVersion()) {
-                            filesFoundWithSpotitagVersionNewest++
-                        }
-                    }
-
-                    if (id3v2Tag.audioSourceUrl !== null) {
-                        filesFoundWithSpotifyId++
-                    }
-                } else if (currentFile.isDirectory && SpotitagSettings.fileSystem.isSubDirectoryIncluded == true) {
-                    val x = scanFiles(currentFile, fileCountCurrent + filesFound, fileCountTotal)
-
-                    filesFound += x[0]
-                    filesFoundWithSpotifyId += x[1]
-                    filesFoundWithSpotitagVersion += x[2]
-                    filesFoundWithSpotitagVersionNewest += x[3]
-                }
-
-                if (fileCountTotal != null) {
-                    progressBar.progress = ((fileCountCurrent + filesFound) / fileCountTotal).toDouble()
-                }
+            if (fileCountTotal != null) {
+                progressBar.progress = ((fileCountCurrent + index + 1) / fileCountTotal).toDouble()
             }
         }
-
-        return intArrayOf(
-            filesFound,
-            filesFoundWithSpotifyId,
-            filesFoundWithSpotitagVersion,
-            filesFoundWithSpotitagVersionNewest
-        )
     }
 }

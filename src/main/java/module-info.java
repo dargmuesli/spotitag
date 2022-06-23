@@ -26,6 +26,8 @@ module de.dargmuesli.spotitag {
     opens de.dargmuesli.spotitag.persistence.state.settings.file_system to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.persistence.state.settings.spotify to com.fasterxml.jackson.databind;
     opens de.dargmuesli.spotitag.ui.controller to javafx.fxml;
+    opens de.dargmuesli.spotitag.util to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.util.converter to com.fasterxml.jackson.databind;
 
     exports de.dargmuesli.spotitag;
 }
