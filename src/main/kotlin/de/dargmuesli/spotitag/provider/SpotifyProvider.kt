@@ -1,8 +1,8 @@
 package de.dargmuesli.spotitag.provider
 
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
-import de.dargmuesli.spotitag.persistence.config.providers.SpotifyConfig
-import de.dargmuesli.spotitag.persistence.state.providers.SpotifyState
+import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
+import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.ui.controller.DashboardController
 import se.michaelthelin.spotify.SpotifyApi
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
@@ -63,7 +63,7 @@ object SpotifyProvider {
             null
         } else {
             val trackPaging =
-                SpotifyProvider.spotifyApi.searchTracks(tagName.split(" - ").joinToString(" ")).build().execute()
+                spotifyApi.searchTracks(tagName.split(" - ").joinToString(" ")).build().execute()
             DashboardController.LOGGER.debug("${trackPaging.total} found!")
 
             if (trackPaging.items.isNotEmpty()) {

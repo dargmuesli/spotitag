@@ -1,5 +1,8 @@
 package de.dargmuesli.spotitag.model.music
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Track(
     val album: Album? = null,
     val artists: List<Artist>? = null,

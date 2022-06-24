@@ -1,5 +1,7 @@
 package de.dargmuesli.spotitag.model.filesystem
 
 import de.dargmuesli.spotitag.model.music.Track
+import kotlinx.serialization.Serializable
 
-data class MusicFile(val path: String, val track: Track = Track(), val spotitagVersion: String? = null)
+@Serializable
+data class MusicFile(val path: String, val track: Track, val spotitagVersion: String? = null)

@@ -1,20 +1,41 @@
 package de.dargmuesli.spotitag.persistence
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import de.dargmuesli.spotitag.MainApp
 import de.dargmuesli.spotitag.ui.SpotitagNotification
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import kotlin.system.exitProcess
 
+@OptIn(ExperimentalSerializationApi::class)
+val module = SerializersModule {
+    polymorphicDefaultSerializer(AbstractSerializable::class) { instance ->
+        @Suppress("UNCHECKED_CAST")
+        when (instance) {
+            is SpotitagCache -> SpotitagCache.Serializer as SerializationStrategy<AbstractSerializable>
+            is SpotitagConfig -> SpotitagConfig.Serializer as SerializationStrategy<AbstractSerializable>
+            is SpotitagState -> SpotitagState.Serializer as SerializationStrategy<AbstractSerializable>
+        }
+    }
+}
+
+val format = Json {
+    prettyPrint = true
+    encodeDefaults = true
+    serializersModule = module
+}
+
 object Persistence {
     var isInitialized = false
 
-    val configDirectory: Path
+    private val cacheDirectory: Path = Paths.get(System.getProperty("user.home"), ".cache", MainApp.APPLICATION_TITLE)
+    private val configDirectory: Path
         get() {
             val os = System.getProperty("os.name").lowercase()
 
@@ -26,16 +47,15 @@ object Persistence {
                 Paths.get("")
             }
         }
-    val cacheDirectory: Path = Paths.get(System.getProperty("user.home"), ".cache", MainApp.APPLICATION_TITLE)
-    val localDirectory: Path = Paths.get(System.getProperty("user.home"), ".local", "share", MainApp.APPLICATION_TITLE)
+    private val localDirectory: Path =
+        Paths.get(System.getProperty("user.home"), ".local", "share", MainApp.APPLICATION_TITLE)
     val tmpDirectory: Path = Paths.get(System.getProperty("java.io.tmpdir"), MainApp.APPLICATION_TITLE)
     private val fileMap = hashMapOf(
-        Pair(cacheDirectory, PersistenceTypes.CACHE),
-        Pair(configDirectory, PersistenceTypes.CONFIG),
-        Pair(localDirectory, PersistenceTypes.STATE)
+        PersistenceTypes.CACHE to cacheDirectory,
+        PersistenceTypes.CONFIG to configDirectory,
+        PersistenceTypes.STATE to localDirectory
     )
-    private val jackson: ObjectMapper = ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT)
-        .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+
     private val versionProperties = Properties()
 
     init {
@@ -44,37 +64,55 @@ object Persistence {
 
     fun getVersion(): String = versionProperties.getProperty("version")
 
-    fun load() {
-        for ((directory, type) in fileMap) {
-            val filePath = directory.resolve("${type.type}.json")
-            if (Files.exists(filePath)) {
-                try {
-                    PersistenceWrapper[type] =
-                        jackson.readValue(
-                            String(Files.readAllBytes(filePath)),
-                            PersistenceWrapper[type].javaClass
-                        )
-                } catch (e: Exception) {
-                    SpotitagNotification.error("Loading application data failed!", e)
-                    exitProcess(0)
+    fun load(vararg types: PersistenceTypes) {
+        if (types.isEmpty()) {
+            load(*fileMap.keys.toTypedArray())
+            SpotitagState.refresh()
+            isInitialized = true
+        } else {
+            for (type in types) {
+                if (type == PersistenceTypes.STATE) continue
+
+                fileMap[type]?.let { directory ->
+                    val filePath = directory.resolve("${type.toString().lowercase()}.json")
+
+                    if (Files.exists(filePath)) {
+                        try {
+                            PersistenceWrapper[type] =
+                                format.decodeFromString(
+                                    AbstractSerializable.serializer(),
+                                    String(Files.readAllBytes(filePath))
+                                )
+                        } catch (e: Exception) {
+                            SpotitagNotification.error("Loading application data failed!", e)
+                            exitProcess(0)
+                        }
+                    }
                 }
             }
         }
-
-        isInitialized = true
     }
 
-    fun save() {
+    fun save(vararg types: PersistenceTypes) {
         if (!isInitialized) return
 
-        for ((directory, type) in fileMap) {
-            val filePath = directory.resolve("${type.type}.json")
+        if (types.isEmpty()) {
+            save(*fileMap.keys.toTypedArray())
+        } else {
+            for (type in types) {
+                fileMap[type]?.let { directory ->
+                    val filePath = directory.resolve("${type.toString().lowercase()}.json")
 
-            if (!Files.exists(filePath.parent)) {
-                Files.createDirectories(filePath.parent)
+                    if (!Files.exists(filePath.parent)) {
+                        Files.createDirectories(filePath.parent)
+                    }
+
+                    Files.writeString(
+                        filePath,
+                        format.encodeToString(PersistenceWrapper[type])
+                    )
+                }
             }
-
-            Files.writeString(filePath, jackson.writeValueAsString(PersistenceWrapper[type]))
         }
     }
 }

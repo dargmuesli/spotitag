@@ -1,9 +1,10 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'org.beryx.jlink' version '2.25.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.21'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 
 group 'de.dargmuesli'
@@ -15,9 +16,9 @@ repositories {
 
 ext {
     ikonliVersion = '12.3.1'
-    jacksonVersion = '2.13.3'
     junitVersion = '5.8.2'
     kotlinCoroutineVersion = '1.6.3'
+    kotlinSerializationVersion = '1.3.3'
     log4jVersion = '2.17.2'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '7.1.0'
@@ -47,12 +48,12 @@ javafx {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
     implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:${kotlinCoroutineVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${kotlinSerializationVersion}")
     implementation("org.kordamp.ikonli:ikonli-fontawesome5-pack:${ikonliVersion}")
     implementation("org.kordamp.ikonli:ikonli-javafx:${ikonliVersion}")
     implementation("se.michaelthelin.spotify:spotify-web-api-java:${spotifyWebApiJavaVersion}")

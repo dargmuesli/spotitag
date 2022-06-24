@@ -1,5 +1,4 @@
 module de.dargmuesli.spotitag {
-    requires com.fasterxml.jackson.databind;
     requires com.google.gson;
     requires java.desktop;
     requires java.logging;
@@ -8,6 +7,8 @@ module de.dargmuesli.spotitag {
     requires kotlin.stdlib;
     requires kotlinx.coroutines.core.jvm;
     requires kotlinx.coroutines.javafx;
+    requires kotlinx.serialization.core;
+    requires kotlinx.serialization.json;
     requires mp3agic;
     requires org.apache.logging.log4j;
     requires org.kordamp.ikonli.core;
@@ -15,19 +16,17 @@ module de.dargmuesli.spotitag {
     requires org.kordamp.ikonli.javafx;
     requires se.michaelthelin.spotify;
 
-    opens de.dargmuesli.spotitag.model.enums to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.model.filesystem to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.model.music to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.cache to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.cache.providers to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.config to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.config.providers to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.state to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.persistence.state.providers to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.model.enums to kotlinx.serialization.core;
+    opens de.dargmuesli.spotitag.model.filesystem to kotlinx.serialization.core;
+    opens de.dargmuesli.spotitag.model.music to kotlinx.serialization.core;
+    opens de.dargmuesli.spotitag.persistence to kotlinx.serialization.core;
+    opens de.dargmuesli.spotitag.persistence.cache to kotlinx.serialization.core;
     opens de.dargmuesli.spotitag.ui.controller to javafx.fxml;
-    opens de.dargmuesli.spotitag.util to com.fasterxml.jackson.databind;
-    opens de.dargmuesli.spotitag.util.converter to com.fasterxml.jackson.databind;
+    opens de.dargmuesli.spotitag.util to kotlinx.serialization.core;
 
+    exports de.dargmuesli.spotitag.persistence.cache;
+    exports de.dargmuesli.spotitag.persistence.config;
+    exports de.dargmuesli.spotitag.persistence.state;
+    exports de.dargmuesli.spotitag.persistence;
     exports de.dargmuesli.spotitag;
 }

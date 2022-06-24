@@ -11,7 +11,6 @@ import javafx.stage.Stage
 import org.apache.logging.log4j.LogManager
 import java.io.IOException
 import java.util.*
-import kotlin.system.exitProcess
 
 class MainApp : Application() {
     override fun start(stage: Stage) {
@@ -20,11 +19,6 @@ class MainApp : Application() {
         SpotitagStage.makeSpotitagStage(stage)
 
         Companion.stage = stage
-
-        stage.setOnCloseRequest {
-            Persistence.save()
-            exitProcess(0)
-        }
 
         try {
             val dashboardLoader = FXMLLoader(MainApp::class.java.getResource("fxml/dashboard.fxml"), resources)

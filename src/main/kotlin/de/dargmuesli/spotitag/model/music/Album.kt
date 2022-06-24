@@ -1,7 +1,9 @@
 package de.dargmuesli.spotitag.model.music
 
 import de.dargmuesli.spotitag.model.enums.AlbumType
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Album(
     val albumType: AlbumType = AlbumType.ALBUM,
     val artists: List<Artist>? = null,

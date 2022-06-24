@@ -10,7 +10,8 @@
     <VBox>
         <MenuBar styleClass="bold">
             <Menu mnemonicParsing="false" text="File">
-                <MenuItem mnemonicParsing="false" onAction="#menuFileSettingsAction" text="Settings"/>
+                <MenuItem mnemonicParsing="false" onAction="#onClickSettings" text="Settings"/>
+                <MenuItem mnemonicParsing="false" onAction="#onClickClearCache" text="Clear caches"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" text="About"/>

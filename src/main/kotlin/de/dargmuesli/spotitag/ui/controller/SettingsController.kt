@@ -1,6 +1,6 @@
 package de.dargmuesli.spotitag.ui.controller
 
-import de.dargmuesli.spotitag.persistence.config.providers.SpotifyConfig
+import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.util.Etter
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
