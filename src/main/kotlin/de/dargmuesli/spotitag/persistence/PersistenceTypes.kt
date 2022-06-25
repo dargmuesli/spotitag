@@ -4,10 +4,7 @@ import kotlinx.serialization.Serializable
 
 enum class PersistenceTypes(@Serializable val spotitagPersistence: AbstractSerializable) {
     CACHE(SpotitagCache),
-    CONFIG(SpotitagConfig),
-
-    @Deprecated("Just for debugging")
-    STATE(SpotitagState);
+    CONFIG(SpotitagConfig);
 
     companion object {
         private val map: MutableMap<AbstractSerializable, PersistenceTypes> = HashMap()

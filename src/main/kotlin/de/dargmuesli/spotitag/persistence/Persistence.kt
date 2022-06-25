@@ -21,7 +21,6 @@ val module = SerializersModule {
         when (instance) {
             is SpotitagCache -> SpotitagCache.Serializer as SerializationStrategy<AbstractSerializable>
             is SpotitagConfig -> SpotitagConfig.Serializer as SerializationStrategy<AbstractSerializable>
-            is SpotitagState -> SpotitagState.Serializer as SerializationStrategy<AbstractSerializable>
         }
     }
 }
@@ -53,8 +52,7 @@ object Persistence {
     val tmpDirectory: Path = Paths.get(System.getProperty("java.io.tmpdir"), MainApp.APPLICATION_TITLE)
     private val fileMap = hashMapOf(
         PersistenceTypes.CACHE to cacheDirectory,
-        PersistenceTypes.CONFIG to configDirectory,
-        PersistenceTypes.STATE to localDirectory
+        PersistenceTypes.CONFIG to configDirectory
     )
 
     private val versionProperties = Properties()
@@ -72,8 +70,6 @@ object Persistence {
             isInitialized.set(true)
         } else {
             for (type in types) {
-                if (type == PersistenceTypes.STATE) continue
-
                 fileMap[type]?.let { directory ->
                     val filePath = directory.resolve("${type.toString().lowercase()}.json")
 

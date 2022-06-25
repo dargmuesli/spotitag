@@ -82,7 +82,7 @@ class DashboardController : CoroutineScope {
             }
         }
 
-        Persistence.isInitialized.addListener { x ->
+        Persistence.isInitialized.addListener { _ ->
             container.isDisable = !Persistence.isInitialized.value
         }
     }
@@ -101,7 +101,7 @@ class DashboardController : CoroutineScope {
         launch(Dispatchers.IO) {
             FileSystemCache.trackData.clear()
             SpotifyCache.trackData.clear()
-            Persistence.save(PersistenceTypes.CACHE, PersistenceTypes.STATE)
+            Persistence.save(PersistenceTypes.CACHE)
         }
     }
 
@@ -199,6 +199,6 @@ class DashboardController : CoroutineScope {
             }
         }
 
-        Persistence.save(PersistenceTypes.CACHE, PersistenceTypes.STATE)
+        Persistence.save(PersistenceTypes.CACHE)
     }
 }

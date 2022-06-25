@@ -5,7 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<ScrollPane xmlns:fx="http://javafx.com/fxml/1" fx:id="container" disable="true" xmlns="http://javafx.com/javafx/16"
+<ScrollPane xmlns:fx="http://javafx.com/fxml" fx:id="container" disable="true" xmlns="http://javafx.com/javafx"
             fx:controller="de.dargmuesli.spotitag.ui.controller.DashboardController">
     <VBox>
         <MenuBar>
