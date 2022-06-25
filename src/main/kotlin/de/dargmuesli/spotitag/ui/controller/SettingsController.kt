@@ -17,15 +17,7 @@ class SettingsController : Initializable {
     private lateinit var spotifyClientSecretTextField: TextField
 
     override fun initialize(url: URL?, rb: ResourceBundle?) {
-        SpotifyConfig.clientId.addListener { _ ->
-            if (spotifyClientIdTextField.text != SpotifyConfig.clientId.value) {
-                spotifyClientIdTextField.text = SpotifyConfig.clientId.value
-            }
-        }
-        SpotifyConfig.clientSecret.addListener { _ ->
-            if (spotifyClientSecretTextField.text != SpotifyConfig.clientSecret.value) {
-                spotifyClientSecretTextField.text = SpotifyConfig.clientSecret.value
-            }
-        }
+        spotifyClientIdTextField.text = SpotifyConfig.clientId.value
+        spotifyClientSecretTextField.text = SpotifyConfig.clientSecret.value
     }
 }
