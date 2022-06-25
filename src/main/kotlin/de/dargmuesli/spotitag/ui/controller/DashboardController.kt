@@ -50,6 +50,9 @@ class DashboardController : CoroutineScope {
     private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
 
     @FXML
+    private lateinit var scanButton: Button
+
+    @FXML
     private lateinit var progressBar: ProgressBar
 
     @FXML
@@ -139,6 +142,8 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun onScan() {
+        scanButton.isDisable = true
+
         launch(Dispatchers.IO) {
             FileSystemConfig.sourceDirectory.value.let {
                 val directory = File(it)
@@ -158,6 +163,8 @@ class DashboardController : CoroutineScope {
                 scanFiles(directory = directory, fileCountTotal = countFiles(directory))
             }
         }
+
+        scanButton.isDisable = false
     }
 
     private fun countFiles(file: File): Int {

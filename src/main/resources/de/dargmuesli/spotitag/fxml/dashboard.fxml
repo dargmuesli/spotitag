@@ -33,7 +33,7 @@
                       onAction="#onSubdirectoryInclusionToggle" text="%isSubdirectoryIncluded"/>
 
             <Label/>
-            <Button onAction="#onScan" text="Scan"/>
+            <Button fx:id="scanButton" onAction="#onScan" text="Scan"/>
             <GridPane hgap="10.0" vgap="10.0">
                 <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="339.0"/>
