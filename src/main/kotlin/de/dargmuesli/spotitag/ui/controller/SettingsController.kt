@@ -18,10 +18,14 @@ class SettingsController : Initializable {
 
     override fun initialize(url: URL?, rb: ResourceBundle?) {
         SpotifyConfig.clientId.addListener { _ ->
-            spotifyClientIdTextField.text = SpotifyConfig.clientId.value
+            if (spotifyClientIdTextField.text != SpotifyConfig.clientId.value) {
+                spotifyClientIdTextField.text = SpotifyConfig.clientId.value
+            }
         }
         SpotifyConfig.clientSecret.addListener { _ ->
-            spotifyClientSecretTextField.text = SpotifyConfig.clientSecret.value
+            if (spotifyClientSecretTextField.text != SpotifyConfig.clientSecret.value) {
+                spotifyClientSecretTextField.text = SpotifyConfig.clientSecret.value
+            }
         }
     }
 }

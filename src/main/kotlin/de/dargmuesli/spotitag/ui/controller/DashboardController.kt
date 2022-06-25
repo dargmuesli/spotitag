@@ -67,11 +67,15 @@ class DashboardController : CoroutineScope {
     @FXML
     fun initialize() {
         FileSystemConfig.sourceDirectory.addListener { _ ->
-            directoryTextField.text = FileSystemConfig.sourceDirectory.value
+            if (directoryTextField.text != FileSystemConfig.sourceDirectory.value) {
+                directoryTextField.text = FileSystemConfig.sourceDirectory.value
+            }
         }
 
         FileSystemConfig.isSubDirectoryIncluded.addListener { _ ->
-            isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
+            if (isSubdirectoryIncludedCheckBox.isSelected != FileSystemConfig.isSubDirectoryIncluded.value) {
+                isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
+            }
         }
 
         arrayOf(
