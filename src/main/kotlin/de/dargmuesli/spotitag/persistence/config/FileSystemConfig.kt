@@ -2,21 +2,26 @@ package de.dargmuesli.spotitag.persistence.config
 
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.PersistenceTypes
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlin.properties.Delegates
 
 @Serializable(with = FileSystemConfig.Serializer::class)
 object FileSystemConfig {
-    var sourceDirectory: String? by Delegates.observable(null) { _, _, _ ->
-        Persistence.save(PersistenceTypes.CONFIG)
+    var sourceDirectory = SimpleStringProperty().also {
+        it.addListener { _ ->
+            Persistence.save(PersistenceTypes.CONFIG)
+        }
     }
-    var isSubDirectoryIncluded: Boolean? by Delegates.observable(null) { _, _, _ ->
-        Persistence.save(PersistenceTypes.CONFIG)
+    var isSubDirectoryIncluded = SimpleBooleanProperty().also {
+        it.addListener { _ ->
+            Persistence.save(PersistenceTypes.CONFIG)
+        }
     }
 
     object Serializer : KSerializer<FileSystemConfig> {
@@ -25,14 +30,14 @@ object FileSystemConfig {
         override fun serialize(encoder: Encoder, value: FileSystemConfig) {
             encoder.encodeSerializableValue(
                 FileSystemConfigSurrogate.serializer(),
-                FileSystemConfigSurrogate(sourceDirectory, isSubDirectoryIncluded)
+                FileSystemConfigSurrogate(sourceDirectory.value, isSubDirectoryIncluded.value)
             )
         }
 
         override fun deserialize(decoder: Decoder): FileSystemConfig {
             val fileSystemConfig = decoder.decodeSerializableValue(FileSystemConfigSurrogate.serializer())
-            sourceDirectory = fileSystemConfig.sourceDirectory
-            isSubDirectoryIncluded = fileSystemConfig.isSubDirectoryIncluded
+            sourceDirectory.set(fileSystemConfig.sourceDirectory)
+            isSubDirectoryIncluded.set(fileSystemConfig.isSubDirectoryIncluded ?: false)
             return FileSystemConfig
         }
     }

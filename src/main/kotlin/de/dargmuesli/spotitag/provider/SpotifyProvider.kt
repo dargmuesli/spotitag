@@ -11,8 +11,8 @@ import java.io.File
 
 object SpotifyProvider {
     private val spotifyApiBuilder: SpotifyApi.Builder = SpotifyApi.builder()
-        .setClientId(SpotifyConfig.clientId)
-        .setClientSecret(SpotifyConfig.clientSecret)
+        .setClientId(SpotifyConfig.clientId.value)
+        .setClientSecret(SpotifyConfig.clientSecret.value)
     var spotifyApi: SpotifyApi = spotifyApiBuilder.build()
 
     init {

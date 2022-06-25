@@ -66,8 +66,13 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun initialize() {
-        directoryTextField.text = FileSystemConfig.sourceDirectory
-        isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded ?: false
+        FileSystemConfig.sourceDirectory.addListener { _ ->
+            directoryTextField.text = FileSystemConfig.sourceDirectory.value
+        }
+
+        FileSystemConfig.isSubDirectoryIncluded.addListener { _ ->
+            isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
+        }
 
         arrayOf(
             FileSystemState.filesFound to filesFoundLabel,
@@ -107,7 +112,7 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun chooseDirectory(actionEvent: ActionEvent) {
-        FileSystemConfig.sourceDirectory?.let {
+        FileSystemConfig.sourceDirectory.value.let {
             val sourceDirectory = File(it)
             directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
         }
@@ -115,23 +120,23 @@ class DashboardController : CoroutineScope {
         val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
 
         directoryTextField.text = file.absolutePath
-        FileSystemConfig.sourceDirectory = file.absolutePath
+        FileSystemConfig.sourceDirectory.set(file.absolutePath)
     }
 
     @FXML
     fun onDirectoryInput() {
-        FileSystemConfig.sourceDirectory = directoryTextField.text
+        FileSystemConfig.sourceDirectory.set(directoryTextField.text)
     }
 
     @FXML
     fun onSubdirectoryInclusionToggle() {
-        FileSystemConfig.isSubDirectoryIncluded = isSubdirectoryIncludedCheckBox.isSelected
+        FileSystemConfig.isSubDirectoryIncluded.set(isSubdirectoryIncludedCheckBox.isSelected)
     }
 
     @FXML
     fun onScan() {
         launch(Dispatchers.IO) {
-            FileSystemConfig.sourceDirectory?.let {
+            FileSystemConfig.sourceDirectory.value.let {
                 val directory = File(it)
 
                 if (!directory.exists()) {
@@ -160,7 +165,7 @@ class DashboardController : CoroutineScope {
             for (currentFile in listOfFiles) {
                 if (currentFile.isFile && currentFile.extension == "mp3") {
                     count++
-                } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded == true) {
+                } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded.value == true) {
                     count += countFiles(currentFile)
                 }
             }
@@ -190,7 +195,7 @@ class DashboardController : CoroutineScope {
                 SpotifyProvider.getSpotifyTrack(musicFile)?.also {
                     SpotifyCache.trackData[it.id] = it
                 }
-            } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded == true) {
+            } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded.value == true) {
                 scanFiles(currentFile, fileCountCurrent + index + 1, fileCountTotal)
             }
 
