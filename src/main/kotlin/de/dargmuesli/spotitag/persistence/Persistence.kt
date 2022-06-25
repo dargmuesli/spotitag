@@ -2,6 +2,7 @@ package de.dargmuesli.spotitag.persistence
 
 import de.dargmuesli.spotitag.MainApp
 import de.dargmuesli.spotitag.ui.SpotitagNotification
+import javafx.beans.property.SimpleBooleanProperty
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.encodeToString
@@ -32,7 +33,7 @@ val format = Json {
 }
 
 object Persistence {
-    var isInitialized = false
+    var isInitialized = SimpleBooleanProperty(false)
 
     private val cacheDirectory: Path = Paths.get(System.getProperty("user.home"), ".cache", MainApp.APPLICATION_TITLE)
     private val configDirectory: Path
@@ -68,7 +69,7 @@ object Persistence {
         if (types.isEmpty()) {
             load(*fileMap.keys.toTypedArray())
             SpotitagState.refresh()
-            isInitialized = true
+            isInitialized.set(true)
         } else {
             for (type in types) {
                 if (type == PersistenceTypes.STATE) continue
@@ -94,7 +95,7 @@ object Persistence {
     }
 
     fun save(vararg types: PersistenceTypes) {
-        if (!isInitialized) return
+        if (!isInitialized.value) return
 
         if (types.isEmpty()) {
             save(*fileMap.keys.toTypedArray())

@@ -14,10 +14,7 @@ import de.dargmuesli.spotitag.ui.SpotitagStage
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.Node
-import javafx.scene.control.CheckBox
-import javafx.scene.control.Label
-import javafx.scene.control.ProgressBar
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.stage.DirectoryChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -42,6 +39,9 @@ class DashboardController : CoroutineScope {
     }
 
     private val directoryChooser = DirectoryChooser()
+
+    @FXML
+    private lateinit var container: ScrollPane
 
     @FXML
     private lateinit var directoryTextField: TextField
@@ -80,6 +80,10 @@ class DashboardController : CoroutineScope {
                     it.second.text = it.first.value.toString()
                 }
             }
+        }
+
+        Persistence.isInitialized.addListener { x ->
+            container.isDisable = !Persistence.isInitialized.value
         }
     }
 

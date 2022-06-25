@@ -40,9 +40,7 @@ object FileSystemCache : IProviderCache<MusicFile> {
 
         override fun deserialize(decoder: Decoder): FileSystemCache {
             val fileSystemCache = decoder.decodeSerializableValue(FileSystemCacheSurrogate.serializer())
-            trackData = observableHashMap<String, MusicFile>().also {
-                it.putAll(fileSystemCache.trackData)
-            }
+            trackData.putAll(fileSystemCache.trackData)
             return FileSystemCache
         }
     }

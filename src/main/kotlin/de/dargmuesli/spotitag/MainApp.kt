@@ -14,10 +14,8 @@ import java.util.*
 
 class MainApp : Application() {
     override fun start(stage: Stage) {
-        Persistence.load()
 
         SpotitagStage.makeSpotitagStage(stage)
-
         Companion.stage = stage
 
         try {
@@ -32,6 +30,8 @@ class MainApp : Application() {
         } catch (e: IOException) {
             LogManager.getLogger().error("Loading the dashboard failed!", e)
         }
+
+        Persistence.load()
     }
 
     companion object {

@@ -27,9 +27,7 @@ object SpotifyCache : IProviderCache<Track> {
 
         override fun deserialize(decoder: Decoder): SpotifyCache {
             val spotifyCache = decoder.decodeSerializableValue(SpotifyCacheSurrogate.serializer())
-            trackData = observableHashMap<String, Track>().also {
-                it.putAll(spotifyCache.trackData)
-            }
+            trackData.putAll(spotifyCache.trackData)
             return SpotifyCache
         }
     }
