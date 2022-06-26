@@ -11,6 +11,7 @@ import de.dargmuesli.spotitag.provider.SpotifyProvider
 import de.dargmuesli.spotitag.provider.SpotifyProvider.getTrackFromSpotifyTrack
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
+import de.dargmuesli.spotitag.util.FileUtil
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections.observableArrayList
 import javafx.collections.ListChangeListener
@@ -361,7 +362,7 @@ class DashboardController : CoroutineScope {
                 val byteArray = Base64.getDecoder().decode(it)
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val image = ImageIO.read(byteArrayInputStream)
-                coverFromSizeLabel.text = byteArray.size.toString()
+                coverFromSizeLabel.text = FileUtil.humanReadableByteCountBin(byteArray.size.toLong())
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
@@ -374,7 +375,7 @@ class DashboardController : CoroutineScope {
                 val byteArray = Base64.getDecoder().decode(it)
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val image = ImageIO.read(byteArrayInputStream)
-                coverToSizeLabel.text = byteArray.size.toString()
+                coverToSizeLabel.text = FileUtil.humanReadableByteCountBin(byteArray.size.toLong())
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
