@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class Album(
     val albumType: AlbumType = AlbumType.ALBUM,
     val artists: List<Artist>? = null,
+    val coverBase64: String? = null,
     val genres: List<String>? = null,
     val id: String? = null,
     val name: String? = null,

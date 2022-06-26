@@ -6,15 +6,21 @@ import de.dargmuesli.spotitag.persistence.PersistenceTypes
 import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.cache.SpotifyCache
 import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
-import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.provider.FileSystemProvider
 import de.dargmuesli.spotitag.provider.SpotifyProvider
+import de.dargmuesli.spotitag.provider.SpotifyProvider.getTrackFromSpotifyTrack
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.collections.FXCollections.observableArrayList
+import javafx.collections.ListChangeListener
+import javafx.embed.swing.SwingFXUtils
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.Node
 import javafx.scene.control.*
+import javafx.scene.image.ImageView
+import javafx.scene.paint.Paint
 import javafx.stage.DirectoryChooser
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -25,18 +31,26 @@ import kotlinx.coroutines.javafx.JavaFxDispatcher
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.util.*
+import javax.imageio.ImageIO
 
 
 class DashboardController : CoroutineScope {
-
     override val coroutineContext: JavaFxDispatcher
         get() = Dispatchers.JavaFx
 
     companion object {
         const val IS_SYNCHRONIZED = true
+
+        val RED: Paint = Paint.valueOf("#aa0000")
+        val GREEN: Paint = Paint.valueOf("#00aa00")
         val LOGGER: Logger = LogManager.getLogger()
     }
+
+    private val fileList = observableArrayList<File>()
+    private var fileListIndex: SimpleIntegerProperty = SimpleIntegerProperty(-1)
 
     private val directoryChooser = DirectoryChooser()
 
@@ -50,52 +64,124 @@ class DashboardController : CoroutineScope {
     private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
 
     @FXML
-    private lateinit var scanButton: Button
-
-    @FXML
     private lateinit var progressBar: ProgressBar
 
     @FXML
-    private lateinit var filesFoundLabel: Label
+    private lateinit var titleFromLabel: Label
 
     @FXML
-    private lateinit var filesFoundWithSpotifyIdLabel: Label
+    private lateinit var artistsFromLabel: Label
 
     @FXML
-    private lateinit var filesFoundWithSpotitagVersionLabel: Label
+    private lateinit var albumFromLabel: Label
 
     @FXML
-    private lateinit var filesFoundWithSpotitagVersionNewestLabel: Label
+    private lateinit var idFromLabel: Label
+
+    @FXML
+    private lateinit var coverFromImageView: ImageView
+
+    @FXML
+    private lateinit var coverFromSizeLabel: Label
+
+    @FXML
+    private lateinit var titleToLabel: Label
+
+    @FXML
+    private lateinit var artistsToLabel: Label
+
+    @FXML
+    private lateinit var albumToLabel: Label
+
+    @FXML
+    private lateinit var idToLabel: Label
+
+    @FXML
+    private lateinit var writeTitleButton: Button
+
+    @FXML
+    private lateinit var writeArtistsButton: Button
+
+    @FXML
+    private lateinit var writeAlbumButton: Button
+
+    @FXML
+    private lateinit var writeIdButton: Button
+
+    @FXML
+    private lateinit var writeCoverButton: Button
+
+    @FXML
+    private lateinit var coverToImageView: ImageView
+
+    @FXML
+    private lateinit var coverToSizeLabel: Label
+
+    @FXML
+    private lateinit var previousButton: Button
+
+    @FXML
+    private lateinit var writeAllButton: Button
+
+    @FXML
+    private lateinit var nextButton: Button
+
+    @FXML
+    private lateinit var indexLabel: Label
 
     @FXML
     fun initialize() {
         FileSystemConfig.sourceDirectory.addListener { _ ->
-            if (directoryTextField.text != FileSystemConfig.sourceDirectory.value) {
-                directoryTextField.text = FileSystemConfig.sourceDirectory.value
-            }
-        }
-
-        FileSystemConfig.isSubDirectoryIncluded.addListener { _ ->
-            if (isSubdirectoryIncludedCheckBox.isSelected != FileSystemConfig.isSubDirectoryIncluded.value) {
-                isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
-            }
-        }
-
-        arrayOf(
-            FileSystemState.filesFound to filesFoundLabel,
-            FileSystemState.filesFoundWithSpotifyId to filesFoundWithSpotifyIdLabel,
-            FileSystemState.filesFoundWithSpotitagVersion to filesFoundWithSpotitagVersionLabel,
-            FileSystemState.filesFoundWithSpotitagVersionNewest to filesFoundWithSpotitagVersionNewestLabel
-        ).forEach {
-            it.first.addListener { _ ->
-                launch(Dispatchers.JavaFx) {
-                    it.second.text = it.first.value.toString()
+            launch(Dispatchers.JavaFx) {
+                if (directoryTextField.text != FileSystemConfig.sourceDirectory.value) {
+                    directoryTextField.text = FileSystemConfig.sourceDirectory.value
                 }
             }
         }
 
+        FileSystemConfig.isSubDirectoryIncluded.addListener { _ ->
+            launch(Dispatchers.JavaFx) {
+                if (isSubdirectoryIncludedCheckBox.isSelected != FileSystemConfig.isSubDirectoryIncluded.value) {
+                    isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
+                }
+            }
+        }
+
+//        arrayOf(
+//            FileSystemState.filesFound to filesFoundLabel,
+//            FileSystemState.filesFoundWithSpotifyId to filesFoundWithSpotifyIdLabel,
+//            FileSystemState.filesFoundWithSpotitagVersion to filesFoundWithSpotitagVersionLabel,
+//            FileSystemState.filesFoundWithSpotitagVersionNewest to filesFoundWithSpotitagVersionNewestLabel
+//        ).forEach {
+//            it.first.addListener { _ ->
+//                launch(Dispatchers.JavaFx) {
+//                    it.second.text = it.first.value.toString()
+//                }
+//            }
+//        }
+
         Persistence.isInitialized.addListener { _ ->
-            container.isDisable = !Persistence.isInitialized.value
+            launch(Dispatchers.JavaFx) {
+                container.isDisable = !Persistence.isInitialized.value
+            }
+        }
+
+        fileList.addListener(
+            ListChangeListener {
+                updateNavigation()
+            }
+        )
+
+        fileListIndex.addListener { _ ->
+            updateNavigation()
+        }
+    }
+
+    private fun updateNavigation() {
+        launch(Dispatchers.JavaFx) {
+            previousButton.isDisable = fileListIndex.value <= 0
+            nextButton.isDisable = fileListIndex.value >= fileList.size - 1
+            indexLabel.text = "${fileListIndex.value + 1} / ${fileList.size}"
         }
     }
 
@@ -141,10 +227,11 @@ class DashboardController : CoroutineScope {
     }
 
     @FXML
-    fun onScan() {
-        scanButton.isDisable = true
-
+    fun onGo() {
         launch(Dispatchers.IO) {
+            fileList.clear()
+            fileListIndex.set(-1)
+
             FileSystemConfig.sourceDirectory.value.let {
                 val directory = File(it)
 
@@ -160,59 +247,192 @@ class DashboardController : CoroutineScope {
 
                 SpotifyProvider.authorize()
 
-                scanFiles(directory = directory, fileCountTotal = countFiles(directory))
+                scanFiles(directory)
+                onNext()
             }
         }
-
-        scanButton.isDisable = false
     }
 
-    private fun countFiles(file: File): Int {
-        var count = 0
+    @FXML
+    private fun onWriteTitle() {
 
+    }
+
+    @FXML
+    private fun onWriteArtists() {
+
+    }
+
+    @FXML
+    private fun onWriteAlbum() {
+
+    }
+
+    @FXML
+    private fun onWriteId() {
+
+    }
+
+    @FXML
+    private fun onWriteCover() {
+
+    }
+
+    @FXML
+    private fun onWriteAll() {
+
+    }
+
+    @FXML
+    private fun onPrevious() {
+        fileListIndex.set(fileListIndex.value - 1)
+        updateView()
+    }
+
+    @FXML
+    private fun onNext() {
+        if (fileListIndex.value == -1 && fileList.size == 0) {
+            return
+        }
+
+        fileListIndex.set(fileListIndex.value + 1)
+        updateView()
+    }
+
+    private fun scanFiles(file: File) {
         val listOfFiles = file.listFiles()
 
         listOfFiles?.let {
             for (currentFile in listOfFiles) {
                 if (currentFile.isFile && currentFile.extension == "mp3") {
-                    count++
+                    fileList.add(currentFile)
                 } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded.value == true) {
-                    count += countFiles(currentFile)
+                    scanFiles(currentFile)
                 }
             }
         }
-
-        return count
     }
 
-    private fun scanFiles(directory: File, fileCountCurrent: Int = 0, fileCountTotal: Int? = null) {
-        val listOfFiles = directory.listFiles()
+    private fun updateView() {
+        if (fileListIndex.value == -1) {
+            LOGGER.error("Update view called without any files!")
+            return
+        }
 
-        listOfFiles?.forEachIndexed { index, currentFile ->
-            if (currentFile.isFile && currentFile.extension == "mp3") {
-                val text = "file \"${currentFile.name}\""
+        val currentFile = fileList[fileListIndex.value]
 
-                if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
-                    LOGGER.debug("Skipping $text as it's cached.")
-                    return@forEachIndexed
-                } else {
-                    LOGGER.info("Processing $text...")
-                }
+        val musicFile = if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
+            LOGGER.debug("Using cache for \"${currentFile.name}\".")
+            FileSystemCache.trackData[currentFile.absolutePath]
+        } else {
+            LOGGER.info("Processing \"${currentFile.name}\"...")
+            FileSystemProvider.getMusicFile(currentFile).also {
+                FileSystemCache.trackData[it.path] = it
+            }
+        }
 
-                val musicFile = FileSystemProvider.getMusicFile(currentFile).also {
-                    FileSystemCache.trackData[it.path] = it
-                }
+        if (musicFile == null) {
+            LOGGER.error("File not found!")
+            return
+        }
 
-                SpotifyProvider.getSpotifyTrack(musicFile)?.also {
-                    SpotifyCache.trackData[it.id] = it
-                }
-            } else if (currentFile.isDirectory && FileSystemConfig.isSubDirectoryIncluded.value == true) {
-                scanFiles(currentFile, fileCountCurrent + index + 1, fileCountTotal)
+        val fileSystemTrack = musicFile.track
+        val spotifyLibTrack = if (SpotifyCache.trackData.containsKey(fileSystemTrack.id)) {
+            SpotifyCache.trackData[fileSystemTrack.id]
+        } else {
+            SpotifyProvider.getSpotifyTrack(musicFile)?.also {
+                SpotifyCache.trackData[it.id] = it
+            }
+        }
+
+        if (spotifyLibTrack == null) {
+            LOGGER.warn("Spotify track not found!")
+            return
+        }
+
+        val spotifyTrack = getTrackFromSpotifyTrack(spotifyLibTrack)
+
+        launch(Dispatchers.JavaFx) {
+            titleFromLabel.text = fileSystemTrack.name
+            artistsFromLabel.text = fileSystemTrack.artists?.joinToString()
+            albumFromLabel.text = fileSystemTrack.album?.name
+            idFromLabel.text = fileSystemTrack.id
+            coverFromImageView.image = fileSystemTrack.album?.coverBase64?.let {
+                val byteArray = Base64.getDecoder().decode(it)
+                val byteArrayInputStream = ByteArrayInputStream(byteArray)
+                val image = ImageIO.read(byteArrayInputStream)
+                coverFromSizeLabel.text = byteArray.size.toString()
+                byteArrayInputStream.close()
+                SwingFXUtils.toFXImage(image, null)
             }
 
-            if (fileCountTotal != null && fileCountTotal != 0) {
-                progressBar.progress = ((fileCountCurrent + index + 1) / fileCountTotal).toDouble()
+            titleToLabel.text = spotifyTrack.name
+            artistsToLabel.text = spotifyTrack.artists?.joinToString()
+            albumToLabel.text = spotifyTrack.album?.name
+            idToLabel.text = spotifyTrack.id
+            coverToImageView.image = spotifyTrack.album?.coverBase64?.let {
+                val byteArray = Base64.getDecoder().decode(it)
+                val byteArrayInputStream = ByteArrayInputStream(byteArray)
+                val image = ImageIO.read(byteArrayInputStream)
+                coverToSizeLabel.text = byteArray.size.toString()
+                byteArrayInputStream.close()
+                SwingFXUtils.toFXImage(image, null)
             }
+
+            if (titleFromLabel.text != titleToLabel.text) {
+                titleFromLabel.textFill = RED
+                titleToLabel.textFill = RED
+                writeTitleButton.isDisable = false
+            } else {
+                titleFromLabel.textFill = GREEN
+                titleToLabel.textFill = GREEN
+                writeTitleButton.isDisable = true
+            }
+
+            if (artistsFromLabel.text != artistsToLabel.text) {
+                artistsFromLabel.textFill = RED
+                artistsToLabel.textFill = RED
+                writeArtistsButton.isDisable = false
+            } else {
+                artistsFromLabel.textFill = GREEN
+                artistsToLabel.textFill = GREEN
+                writeArtistsButton.isDisable = true
+            }
+
+            if (albumFromLabel.text != albumToLabel.text) {
+                albumFromLabel.textFill = RED
+                albumToLabel.textFill = RED
+                writeAlbumButton.isDisable = false
+            } else {
+                albumFromLabel.textFill = GREEN
+                albumToLabel.textFill = GREEN
+                writeAlbumButton.isDisable = true
+            }
+
+            if (idFromLabel.text != idToLabel.text) {
+                idFromLabel.textFill = RED
+                idToLabel.textFill = RED
+                writeIdButton.isDisable = false
+            } else {
+                idFromLabel.textFill = GREEN
+                idToLabel.textFill = GREEN
+                writeIdButton.isDisable = true
+            }
+
+            if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
+                coverFromSizeLabel.textFill = RED
+                coverToSizeLabel.textFill = RED
+                writeCoverButton.isDisable = false
+            } else {
+                coverFromSizeLabel.textFill = GREEN
+                coverToSizeLabel.textFill = GREEN
+                writeCoverButton.isDisable = true
+            }
+
+            writeAllButton.isDisable =
+                writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable
+
+            progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
         }
 
         Persistence.save(PersistenceTypes.CACHE)

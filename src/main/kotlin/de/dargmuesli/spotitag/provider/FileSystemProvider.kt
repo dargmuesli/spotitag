@@ -10,6 +10,7 @@ import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.ui.controller.DashboardController
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
 import java.io.File
+import java.util.*
 
 object FileSystemProvider {
     fun getMusicFile(file: File): MusicFile {
@@ -40,6 +41,7 @@ object FileSystemProvider {
             Track(
                 album = Album(
                     artists = id3v2Tag.albumArtist?.let { listOf(Artist(name = id3v2Tag.albumArtist)) },
+                    coverBase64 = Base64.getEncoder().encodeToString(id3v2Tag.albumImage),
                     name = id3v2Tag.album
                 ),
                 artists = id3v2Tag.artist?.let { listOf(Artist(name = id3v2Tag.artist)) },

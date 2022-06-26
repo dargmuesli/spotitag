@@ -14,7 +14,7 @@
         <opaqueInsets>
             <Insets/>
         </opaqueInsets>
-        <Label styleClass="h1" text="%settings"/>
+        <Label text="%settings"/>
         <VBox layoutX="10.0" layoutY="32.0">
             <opaqueInsets>
                 <Insets/>
@@ -22,7 +22,7 @@
             <padding>
                 <Insets bottom="10.0" left="10.0" top="10.0"/>
             </padding>
-            <Label styleClass="h2" text="Spotify">
+            <Label text="%spotify">
                 <VBox.margin>
                     <Insets/>
                 </VBox.margin>
@@ -42,11 +42,11 @@
                 <VBox.margin>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </VBox.margin>
-                <Label styleClass="bold" text="Client ID" GridPane.columnIndex="0"
+                <Label text="%clientId" GridPane.columnIndex="0"
                        GridPane.rowIndex="0"/>
                 <TextField fx:id="spotifyClientIdTextField" prefHeight="25.0" GridPane.columnIndex="1"
                            GridPane.rowIndex="0" HBox.hgrow="ALWAYS"/>
-                <Label styleClass="bold" text="Client Secret" GridPane.columnIndex="0"
+                <Label text="%clientSecret" GridPane.columnIndex="0"
                        GridPane.rowIndex="1"/>
                 <TextField fx:id="spotifyClientSecretTextField" prefHeight="25.0"
                            GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS"/>

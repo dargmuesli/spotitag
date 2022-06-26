@@ -4,6 +4,8 @@ module de.dargmuesli.spotitag {
     requires java.logging;
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.swing;
+    requires kotlin.stdlib.jdk7;
     requires kotlin.stdlib;
     requires kotlinx.coroutines.core.jvm;
     requires kotlinx.coroutines.javafx;

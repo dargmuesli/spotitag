@@ -1,12 +1,19 @@
 package de.dargmuesli.spotitag.provider
 
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
+import de.dargmuesli.spotitag.model.music.Album
+import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.ui.controller.DashboardController
 import se.michaelthelin.spotify.SpotifyApi
+import se.michaelthelin.spotify.model_objects.specification.Track
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.net.URL
+import java.util.*
+import javax.imageio.ImageIO
 
 
 object SpotifyProvider {
@@ -54,7 +61,7 @@ object SpotifyProvider {
         return true
     }
 
-    fun getSpotifyTrack(musicFile: MusicFile): se.michaelthelin.spotify.model_objects.specification.Track? {
+    fun getSpotifyTrack(musicFile: MusicFile): Track? {
         val fileName = File(musicFile.path).nameWithoutExtension
         val tagName = (musicFile.track.artists?.let { it.joinToString() + " - " } ?: "") + musicFile.track.name
 
@@ -81,5 +88,26 @@ object SpotifyProvider {
                 null
             }
         }
+    }
+
+    fun getTrackFromSpotifyTrack(track: Track): de.dargmuesli.spotitag.model.music.Track {
+        return de.dargmuesli.spotitag.model.music.Track(
+            album = Album(
+                artists = track.album.artists?.let { track.album.artists.map { (Artist(name = it.name)) } },
+                coverBase64 = track.album.images?.let {
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    val url = URL(it[0].url)
+                    ImageIO.write(ImageIO.read(url), "jpg", byteArrayOutputStream)
+                    val output = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray())
+                    byteArrayOutputStream.close()
+                    output
+                },
+                name = track.album.name
+            ),
+            artists = track.artists?.let { track.artists.map { Artist(name = it.name) } },
+            durationMs = track.durationMs.toLong(),
+            id = track.id,
+            name = track.name
+        )
     }
 }

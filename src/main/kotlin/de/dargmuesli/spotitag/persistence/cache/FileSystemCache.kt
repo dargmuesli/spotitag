@@ -25,7 +25,8 @@ object FileSystemCache : IProviderCache<MusicFile> {
                 if (change.valueRemoved != null) {
                     updateCounter(change.valueRemoved) { x -> x - 1 }
                 }
-            })
+            }
+        )
     }
 
     object Serializer : KSerializer<FileSystemCache> {
