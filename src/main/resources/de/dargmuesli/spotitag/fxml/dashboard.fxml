@@ -27,8 +27,7 @@
                             <FontIcon iconLiteral="fas-folder-open"/>
                         </graphic>
                     </Button>
-                    <TextField fx:id="directoryTextField" onKeyTyped="#onDirectoryInput"
-                               HBox.hgrow="ALWAYS"/>
+                    <TextField fx:id="directoryTextField" onKeyTyped="#onDirectoryInput" HBox.hgrow="ALWAYS"/>
                     <CheckBox fx:id="isSubdirectoryIncludedCheckBox" mnemonicParsing="false"
                               onAction="#onSubdirectoryInclusionToggle" text="%isSubdirectoryIncluded"/>
                 </HBox>
@@ -76,34 +75,29 @@
                                    preserveRatio="true"/>
                         <Label fx:id="coverToSizeLabel" text="%placeholder"/>
                     </VBox>
-                    <Button fx:id="writeTitleButton" onAction="#onWriteTitle" text="%write" GridPane.columnIndex="3"
-                            disable="true"/>
-                    <Button fx:id="writeArtistsButton" onAction="#onWriteArtists" text="%write" GridPane.columnIndex="3"
-                            GridPane.rowIndex="1"
-                            disable="true"/>
-                    <Button fx:id="writeAlbumButton" onAction="#onWriteAlbum" text="%write" GridPane.columnIndex="3"
-                            GridPane.rowIndex="2"
-                            disable="true"/>
-                    <Button fx:id="writeIdButton" onAction="#onWriteId" text="%write" GridPane.columnIndex="3"
-                            GridPane.rowIndex="3"
-                            disable="true"/>
-                    <Button fx:id="writeCoverButton" onAction="#onWriteCover" text="%write" GridPane.columnIndex="3"
-                            GridPane.rowIndex="4"
-                            disable="true"/>
-                    <Button fx:id="writeAllButton" onAction="#onWriteAll" text="%writeAll" disable="true"
-                            GridPane.columnIndex="3"
-                            GridPane.rowIndex="5"/>
+                    <Button fx:id="writeTitleButton" disable="true" onAction="#onWriteTitle" text="%write"
+                            GridPane.columnIndex="3"/>
+                    <Button fx:id="writeArtistsButton" disable="true" onAction="#onWriteArtists" text="%write"
+                            GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                    <Button fx:id="writeAlbumButton" disable="true" onAction="#onWriteAlbum" text="%write"
+                            GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                    <Button fx:id="writeIdButton" disable="true" onAction="#onWriteId" text="%write"
+                            GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+                    <Button fx:id="writeCoverButton" disable="true" onAction="#onWriteCover" text="%write"
+                            GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+                    <Button fx:id="writeAllButton" disable="true" onAction="#onWriteAll" text="%writeAll"
+                            GridPane.columnIndex="3" GridPane.rowIndex="5"/>
                 </GridPane>
             </HBox>
             <HBox alignment="CENTER" spacing="10.0">
-                <Button fx:id="previousButton" onAction="#onPrevious" text="%previous" disable="true"/>
-                <Button fx:id="nextButton" onAction="#onNext" text="%next" disable="true"/>
+                <Button fx:id="previousButton" disable="true" onAction="#onPrevious" text="%previous"/>
+                <Button fx:id="nextButton" disable="true" onAction="#onNext" text="%next"/>
             </HBox>
             <HBox alignment="CENTER">
                 <Label fx:id="indexLabel" text="%placeholder"/>
             </HBox>
         </VBox>
         <VBox VBox.vgrow="ALWAYS"/>
-        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0"/>
+        <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="-Infinity" progress="0.0"/>
     </VBox>
 </ScrollPane>
