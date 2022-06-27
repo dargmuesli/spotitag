@@ -86,6 +86,9 @@ class DashboardController : CoroutineScope {
     private lateinit var coverFromSizeLabel: Label
 
     @FXML
+    private lateinit var durationFromLabel: Label
+
+    @FXML
     private lateinit var titleToLabel: Label
 
     @FXML
@@ -96,6 +99,15 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var idToLabel: Label
+
+    @FXML
+    private lateinit var coverToImageView: ImageView
+
+    @FXML
+    private lateinit var coverToSizeLabel: Label
+
+    @FXML
+    private lateinit var durationToLabel: Label
 
     @FXML
     private lateinit var writeTitleButton: Button
@@ -111,12 +123,6 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var writeCoverButton: Button
-
-    @FXML
-    private lateinit var coverToImageView: ImageView
-
-    @FXML
-    private lateinit var coverToSizeLabel: Label
 
     @FXML
     private lateinit var previousButton: Button
@@ -366,6 +372,7 @@ class DashboardController : CoroutineScope {
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
+            durationFromLabel.text = fileSystemTrack.durationMs.toString()
 
             titleToLabel.text = spotifyTrack.name
             artistsToLabel.text = spotifyTrack.artists?.joinToString()
@@ -379,6 +386,7 @@ class DashboardController : CoroutineScope {
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
+            durationToLabel.text = spotifyTrack.durationMs.toString()
 
             if (titleFromLabel.text != titleToLabel.text) {
                 titleFromLabel.textFill = RED
@@ -428,6 +436,14 @@ class DashboardController : CoroutineScope {
                 coverFromSizeLabel.textFill = GREEN
                 coverToSizeLabel.textFill = GREEN
                 writeCoverButton.isDisable = true
+            }
+
+            if (durationFromLabel.text != durationToLabel.text) {
+                durationFromLabel.textFill = RED
+                durationToLabel.textFill = RED
+            } else {
+                durationFromLabel.textFill = GREEN
+                durationToLabel.textFill = GREEN
             }
 
             writeAllButton.isDisable =

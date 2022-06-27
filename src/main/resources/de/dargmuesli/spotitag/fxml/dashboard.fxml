@@ -48,6 +48,7 @@
                         <RowConstraints/>
                         <RowConstraints/>
                         <RowConstraints/>
+                        <RowConstraints/>
                     </rowConstraints>
                     <opaqueInsets>
                         <Insets/>
@@ -57,6 +58,7 @@
                     <Label text="%album" GridPane.rowIndex="2"/>
                     <Label text="%id" GridPane.rowIndex="3"/>
                     <Label text="%cover" GridPane.rowIndex="4"/>
+                    <Label text="%duration" GridPane.rowIndex="5"/>
                     <Label fx:id="titleFromLabel" text="%placeholder" GridPane.columnIndex="1"/>
                     <Label fx:id="artistsFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                     <Label fx:id="albumFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
@@ -66,6 +68,8 @@
                                    preserveRatio="true"/>
                         <Label fx:id="coverFromSizeLabel" text="%placeholder"/>
                     </VBox>
+                    <Label fx:id="durationFromLabel" text="%placeholder" GridPane.columnIndex="1"
+                           GridPane.rowIndex="5"/>
                     <Label fx:id="titleToLabel" text="%placeholder" GridPane.columnIndex="2"/>
                     <Label fx:id="artistsToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
                     <Label fx:id="albumToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
@@ -75,6 +79,7 @@
                                    preserveRatio="true"/>
                         <Label fx:id="coverToSizeLabel" text="%placeholder"/>
                     </VBox>
+                    <Label fx:id="durationToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
                     <Button fx:id="writeTitleButton" disable="true" onAction="#onWriteTitle" text="%write"
                             GridPane.columnIndex="3"/>
                     <Button fx:id="writeArtistsButton" disable="true" onAction="#onWriteArtists" text="%write"
@@ -86,7 +91,7 @@
                     <Button fx:id="writeCoverButton" disable="true" onAction="#onWriteCover" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="4"/>
                     <Button fx:id="writeAllButton" disable="true" onAction="#onWriteAll" text="%writeAll"
-                            GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+                            GridPane.columnIndex="3" GridPane.rowIndex="6"/>
                 </GridPane>
             </HBox>
             <HBox alignment="CENTER" spacing="10.0">
