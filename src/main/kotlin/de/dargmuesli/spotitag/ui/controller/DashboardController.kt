@@ -38,8 +38,10 @@ import kotlinx.coroutines.javafx.JavaFxDispatcher
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.awt.Desktop
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.abs
@@ -135,6 +137,12 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var previousButton: Button
+
+    @FXML
+    private lateinit var openFileSystemButton: Button
+
+    @FXML
+    private lateinit var openSpotifyButton: Button
 
     @FXML
     private lateinit var writeAllButton: Button
@@ -307,6 +315,22 @@ class DashboardController : CoroutineScope {
     }
 
     @FXML
+    private fun onOpenFileSystem() {
+        launch(Dispatchers.IO) {
+            Desktop.getDesktop().open(fileList[fileListIndex.value])
+        }
+    }
+
+    @FXML
+    private fun onOpenSpotify() {
+        launch(Dispatchers.IO) {
+            SpotifyState.currentTrack?.let {
+                Desktop.getDesktop().browse(URI("https://open.spotify.com/track/${it.id}"))
+            }
+        }
+    }
+
+    @FXML
     private fun onWriteAll() {
         launch(Dispatchers.IO) {
             writeMusicFile()
@@ -389,10 +413,9 @@ class DashboardController : CoroutineScope {
 
             if (spotifyLibTrack == null) {
                 SpotitagNotification.warn("Spotify track not found for \"${currentFile.name}\"!")
-                return@launch
             }
 
-            val spotifyTrack = getTrackFromSpotifyTrack(spotifyLibTrack)
+            val spotifyTrack = spotifyLibTrack?.let { getTrackFromSpotifyTrack(it) }
 
             FileSystemState.currentFile = currentFile
             FileSystemState.currentTrack = fileSystemTrack
@@ -413,13 +436,16 @@ class DashboardController : CoroutineScope {
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
+                if (fileSystemTrack.album?.coverBase64 == null) {
+                    coverFromSizeLabel.text = ""
+                }
                 durationFromLabel.text = fileSystemTrack.durationMs?.toString()
 
-                titleToLabel.text = spotifyTrack.name
-                artistsToLabel.text = spotifyTrack.artists?.joinToString()
-                albumToLabel.text = spotifyTrack.album?.name
-                idToLabel.text = spotifyTrack.id
-                coverToImageView.image = spotifyTrack.album?.coverBase64?.let {
+                titleToLabel.text = spotifyTrack?.name
+                artistsToLabel.text = spotifyTrack?.artists?.joinToString()
+                albumToLabel.text = spotifyTrack?.album?.name
+                idToLabel.text = spotifyTrack?.id
+                coverToImageView.image = spotifyTrack?.album?.coverBase64?.let {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
                     val image = ImageIO.read(byteArrayInputStream)
@@ -427,7 +453,10 @@ class DashboardController : CoroutineScope {
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
-                durationToLabel.text = spotifyTrack.durationMs?.toString()
+                if (spotifyTrack?.album?.coverBase64 == null) {
+                    coverToSizeLabel.text = ""
+                }
+                durationToLabel.text = spotifyTrack?.durationMs?.toString()
 
                 if (titleFromLabel.text != titleToLabel.text) {
                     titleFromLabel.textFill = RED
@@ -474,7 +503,7 @@ class DashboardController : CoroutineScope {
                     writeIdButton.isDisable = true
                 }
 
-                if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
+                if (spotifyTrack?.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
                     if (SpotitagConfig.isCoverChecked.value) {
                         coverFromSizeLabel.textFill = RED
                         coverToSizeLabel.textFill = RED
@@ -489,7 +518,7 @@ class DashboardController : CoroutineScope {
                     writeCoverButton.isDisable = true
                 }
 
-                val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
+                val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack?.durationMs != null
                         && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
 
                 if (durationFromLabel.text != durationToLabel.text) {
@@ -504,6 +533,9 @@ class DashboardController : CoroutineScope {
                     durationFromLabel.textFill = GREEN
                     durationToLabel.textFill = GREEN
                 }
+
+                openFileSystemButton.isDisable = false
+                openSpotifyButton.isDisable = spotifyTrack == null
 
                 writeAllButton.isDisable =
                     writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable

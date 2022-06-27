@@ -90,6 +90,10 @@
                             GridPane.columnIndex="3" GridPane.rowIndex="3"/>
                     <Button fx:id="writeCoverButton" disable="true" onAction="#onWriteCover" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+                    <Button fx:id="openFileSystemButton" disable="true" onAction="#onOpenFileSystem" text="%open"
+                            GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                    <Button fx:id="openSpotifyButton" disable="true" onAction="#onOpenSpotify" text="%open"
+                            GridPane.columnIndex="2" GridPane.rowIndex="6"/>
                     <Button fx:id="writeAllButton" disable="true" onAction="#onWriteAll" text="%writeAll"
                             GridPane.columnIndex="3" GridPane.rowIndex="6"/>
                 </GridPane>
