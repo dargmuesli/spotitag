@@ -460,7 +460,7 @@ class DashboardController : CoroutineScope {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
                     val image = ImageIO.read(byteArrayInputStream)
-                    coverFromSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
+                    coverFromSizeLabel.text = "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
@@ -478,7 +478,7 @@ class DashboardController : CoroutineScope {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
                     val image = ImageIO.read(byteArrayInputStream)
-                    coverToSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
+                    coverToSizeLabel.text = "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
