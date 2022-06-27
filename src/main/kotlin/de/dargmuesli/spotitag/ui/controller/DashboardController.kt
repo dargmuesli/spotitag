@@ -102,6 +102,9 @@ class DashboardController : CoroutineScope {
     private lateinit var durationFromLabel: Label
 
     @FXML
+    private lateinit var versionFromLabel: Label
+
+    @FXML
     private lateinit var titleToLabel: Label
 
     @FXML
@@ -124,6 +127,9 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var durationToLabel: Label
+
+    @FXML
+    private lateinit var versionToLabel: Label
 
     @FXML
     private lateinit var writeTitleButton: Button
@@ -460,7 +466,8 @@ class DashboardController : CoroutineScope {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
                     val image = ImageIO.read(byteArrayInputStream)
-                    coverFromSizeLabel.text = "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
+                    coverFromSizeLabel.text =
+                        "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
@@ -470,6 +477,7 @@ class DashboardController : CoroutineScope {
                 idFromLabel.text = fileSystemTrack.id
                 fileNameFromLabel.text = currentFile.nameWithoutExtension
                 durationFromLabel.text = fileSystemTrack.durationMs?.toString()
+                versionFromLabel.text = musicFile.spotitagVersion
 
                 titleToLabel.text = spotifyTrack?.name
                 artistsToLabel.text = spotifyTrack?.artists?.joinToString()
@@ -478,7 +486,8 @@ class DashboardController : CoroutineScope {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
                     val image = ImageIO.read(byteArrayInputStream)
-                    coverToSizeLabel.text = "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
+                    coverToSizeLabel.text =
+                        "${image.width}x${image.height} (${Util.humanReadableByteCountBin(byteArray.size.toLong())})"
                     byteArrayInputStream.close()
                     SwingFXUtils.toFXImage(image, null)
                 }
@@ -488,6 +497,7 @@ class DashboardController : CoroutineScope {
                 idToLabel.text = spotifyTrack?.id
                 fileNameToLabel.text = spotifyTrack?.let { getFileNameFromTrack(it) }
                 durationToLabel.text = spotifyTrack?.durationMs?.toString()
+                versionToLabel.text = Persistence.getVersion()
 
                 if (titleFromLabel.text != titleToLabel.text) {
                     titleFromLabel.textFill = RED
@@ -583,6 +593,14 @@ class DashboardController : CoroutineScope {
                 } else {
                     durationFromLabel.textFill = GREEN
                     durationToLabel.textFill = GREEN
+                }
+
+                if (versionFromLabel.text != versionToLabel.text) {
+                    versionFromLabel.textFill = YELLOW
+                    versionToLabel.textFill = YELLOW
+                } else {
+                    versionFromLabel.textFill = GREEN
+                    versionToLabel.textFill = GREEN
                 }
 
                 openFileSystemButton.isDisable = false
