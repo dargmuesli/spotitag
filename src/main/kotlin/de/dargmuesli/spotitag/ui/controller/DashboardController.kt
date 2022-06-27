@@ -257,32 +257,62 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private fun onWriteTitle() {
-        writeMusicFile(Id3Properties.TITLE)
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.TITLE)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
     private fun onWriteArtists() {
-        writeMusicFile(Id3Properties.ARTISTS)
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.ARTISTS)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
     private fun onWriteAlbum() {
-        writeMusicFile(Id3Properties.ALBUM)
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.ALBUM)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
     private fun onWriteId() {
-        writeMusicFile(Id3Properties.ID)
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.ID)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
     private fun onWriteCover() {
-        writeMusicFile(Id3Properties.COVER)
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.COVER)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
     private fun onWriteAll() {
-        writeMusicFile()
+        launch(Dispatchers.IO) {
+            writeMusicFile()
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
     }
 
     @FXML
@@ -316,148 +346,150 @@ class DashboardController : CoroutineScope {
     }
 
     private fun updateView() {
-        if (fileListIndex.value == -1) {
-            LOGGER.error("Update view called without any files!")
-            return
-        }
-
-        val currentFile = fileList[fileListIndex.value]
-
-        val musicFile = if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
-            LOGGER.debug("Using cache for \"${currentFile.name}\".")
-            FileSystemCache.trackData[currentFile.absolutePath]
-        } else {
-            LOGGER.info("Processing \"${currentFile.name}\"...")
-            FileSystemProvider.getMusicFile(currentFile).also {
-                FileSystemCache.trackData[it.path] = it
+        launch(Dispatchers.IO) {
+            if (fileListIndex.value == -1) {
+                LOGGER.error("Update view called without any files!")
+                return@launch
             }
-        }
 
-        if (musicFile == null) {
-            LOGGER.error("File not found!")
-            return
-        }
+            val currentFile = fileList[fileListIndex.value]
 
-        val fileSystemTrack = musicFile.track
-        val spotifyLibTrack = if (SpotifyCache.trackData.containsKey(fileSystemTrack.id)) {
-            SpotifyCache.trackData[fileSystemTrack.id]
-        } else {
-            SpotifyProvider.getSpotifyTrack(musicFile)?.also {
-                SpotifyCache.trackData[it.id] = it
-            }
-        }
-
-        if (spotifyLibTrack == null) {
-            LOGGER.warn("Spotify track not found!")
-            return
-        }
-
-        val spotifyTrack = getTrackFromSpotifyTrack(spotifyLibTrack)
-
-        FileSystemState.currentFile = currentFile
-        FileSystemState.currentTrack = fileSystemTrack
-        SpotifyState.currentTrack = spotifyTrack
-
-        Persistence.save(PersistenceTypes.CACHE)
-
-        launch(Dispatchers.JavaFx) {
-            titleFromLabel.text = fileSystemTrack.name
-            artistsFromLabel.text = fileSystemTrack.artists?.joinToString()
-            albumFromLabel.text = fileSystemTrack.album?.name
-            idFromLabel.text = fileSystemTrack.id
-            coverFromImageView.image = fileSystemTrack.album?.coverBase64?.let {
-                val byteArray = Base64.getDecoder().decode(it)
-                val byteArrayInputStream = ByteArrayInputStream(byteArray)
-                val image = ImageIO.read(byteArrayInputStream)
-                coverFromSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
-                byteArrayInputStream.close()
-                SwingFXUtils.toFXImage(image, null)
-            }
-            durationFromLabel.text = fileSystemTrack.durationMs.toString()
-
-            titleToLabel.text = spotifyTrack.name
-            artistsToLabel.text = spotifyTrack.artists?.joinToString()
-            albumToLabel.text = spotifyTrack.album?.name
-            idToLabel.text = spotifyTrack.id
-            coverToImageView.image = spotifyTrack.album?.coverBase64?.let {
-                val byteArray = Base64.getDecoder().decode(it)
-                val byteArrayInputStream = ByteArrayInputStream(byteArray)
-                val image = ImageIO.read(byteArrayInputStream)
-                coverToSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
-                byteArrayInputStream.close()
-                SwingFXUtils.toFXImage(image, null)
-            }
-            durationToLabel.text = spotifyTrack.durationMs.toString()
-
-            if (titleFromLabel.text != titleToLabel.text) {
-                titleFromLabel.textFill = RED
-                titleToLabel.textFill = RED
-                writeTitleButton.isDisable = false
+            val musicFile = if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
+                LOGGER.debug("Using cache for \"${currentFile.name}\".")
+                FileSystemCache.trackData[currentFile.absolutePath]
             } else {
-                titleFromLabel.textFill = GREEN
-                titleToLabel.textFill = GREEN
-                writeTitleButton.isDisable = true
-            }
-
-            if (artistsFromLabel.text != artistsToLabel.text) {
-                artistsFromLabel.textFill = RED
-                artistsToLabel.textFill = RED
-                writeArtistsButton.isDisable = false
-            } else {
-                artistsFromLabel.textFill = GREEN
-                artistsToLabel.textFill = GREEN
-                writeArtistsButton.isDisable = true
-            }
-
-            if (albumFromLabel.text != albumToLabel.text) {
-                albumFromLabel.textFill = RED
-                albumToLabel.textFill = RED
-                writeAlbumButton.isDisable = false
-            } else {
-                albumFromLabel.textFill = GREEN
-                albumToLabel.textFill = GREEN
-                writeAlbumButton.isDisable = true
-            }
-
-            if (idFromLabel.text != idToLabel.text) {
-                idFromLabel.textFill = RED
-                idToLabel.textFill = RED
-                writeIdButton.isDisable = false
-            } else {
-                idFromLabel.textFill = GREEN
-                idToLabel.textFill = GREEN
-                writeIdButton.isDisable = true
-            }
-
-            if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
-                coverFromSizeLabel.textFill = RED
-                coverToSizeLabel.textFill = RED
-                writeCoverButton.isDisable = false
-            } else {
-                coverFromSizeLabel.textFill = GREEN
-                coverToSizeLabel.textFill = GREEN
-                writeCoverButton.isDisable = true
-            }
-
-            if (durationFromLabel.text != durationToLabel.text) {
-                if (fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
-                    && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
-                ) {
-                    durationFromLabel.textFill = YELLOW
-                    durationToLabel.textFill = YELLOW
-                } else {
-                    durationFromLabel.textFill = RED
-                    durationToLabel.textFill = RED
+                LOGGER.info("Processing \"${currentFile.name}\"...")
+                FileSystemProvider.getMusicFile(currentFile).also {
+                    FileSystemCache.trackData[it.path] = it
                 }
-            } else {
-                durationFromLabel.textFill = GREEN
-                durationToLabel.textFill = GREEN
             }
 
-            writeAllButton.isDisable =
-                writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable
+            if (musicFile == null) {
+                LOGGER.error("File not found!")
+                return@launch
+            }
 
-            progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
+            val fileSystemTrack = musicFile.track
+            val spotifyLibTrack = if (SpotifyCache.trackData.containsKey(fileSystemTrack.id)) {
+                SpotifyCache.trackData[fileSystemTrack.id]
+            } else {
+                SpotifyProvider.getSpotifyTrack(musicFile)?.also {
+                    SpotifyCache.trackData[it.id] = it
+                }
+            }
+
+            if (spotifyLibTrack == null) {
+                LOGGER.warn("Spotify track not found!")
+                return@launch
+            }
+
+            val spotifyTrack = getTrackFromSpotifyTrack(spotifyLibTrack)
+
+            FileSystemState.currentFile = currentFile
+            FileSystemState.currentTrack = fileSystemTrack
+            SpotifyState.currentTrack = spotifyTrack
+
+            Persistence.save(PersistenceTypes.CACHE)
+
+            launch(Dispatchers.JavaFx) {
+                titleFromLabel.text = fileSystemTrack.name
+                artistsFromLabel.text = fileSystemTrack.artists?.joinToString()
+                albumFromLabel.text = fileSystemTrack.album?.name
+                idFromLabel.text = fileSystemTrack.id
+                coverFromImageView.image = fileSystemTrack.album?.coverBase64?.let {
+                    val byteArray = Base64.getDecoder().decode(it)
+                    val byteArrayInputStream = ByteArrayInputStream(byteArray)
+                    val image = ImageIO.read(byteArrayInputStream)
+                    coverFromSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
+                    byteArrayInputStream.close()
+                    SwingFXUtils.toFXImage(image, null)
+                }
+                durationFromLabel.text = fileSystemTrack.durationMs?.toString()
+
+                titleToLabel.text = spotifyTrack.name
+                artistsToLabel.text = spotifyTrack.artists?.joinToString()
+                albumToLabel.text = spotifyTrack.album?.name
+                idToLabel.text = spotifyTrack.id
+                coverToImageView.image = spotifyTrack.album?.coverBase64?.let {
+                    val byteArray = Base64.getDecoder().decode(it)
+                    val byteArrayInputStream = ByteArrayInputStream(byteArray)
+                    val image = ImageIO.read(byteArrayInputStream)
+                    coverToSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
+                    byteArrayInputStream.close()
+                    SwingFXUtils.toFXImage(image, null)
+                }
+                durationToLabel.text = spotifyTrack.durationMs?.toString()
+
+                if (titleFromLabel.text != titleToLabel.text) {
+                    titleFromLabel.textFill = RED
+                    titleToLabel.textFill = RED
+                    writeTitleButton.isDisable = false
+                } else {
+                    titleFromLabel.textFill = GREEN
+                    titleToLabel.textFill = GREEN
+                    writeTitleButton.isDisable = true
+                }
+
+                if (artistsFromLabel.text != artistsToLabel.text) {
+                    artistsFromLabel.textFill = RED
+                    artistsToLabel.textFill = RED
+                    writeArtistsButton.isDisable = false
+                } else {
+                    artistsFromLabel.textFill = GREEN
+                    artistsToLabel.textFill = GREEN
+                    writeArtistsButton.isDisable = true
+                }
+
+                if (albumFromLabel.text != albumToLabel.text) {
+                    albumFromLabel.textFill = RED
+                    albumToLabel.textFill = RED
+                    writeAlbumButton.isDisable = false
+                } else {
+                    albumFromLabel.textFill = GREEN
+                    albumToLabel.textFill = GREEN
+                    writeAlbumButton.isDisable = true
+                }
+
+                if (idFromLabel.text != idToLabel.text) {
+                    idFromLabel.textFill = RED
+                    idToLabel.textFill = RED
+                    writeIdButton.isDisable = false
+                } else {
+                    idFromLabel.textFill = GREEN
+                    idToLabel.textFill = GREEN
+                    writeIdButton.isDisable = true
+                }
+
+                if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
+                    coverFromSizeLabel.textFill = RED
+                    coverToSizeLabel.textFill = RED
+                    writeCoverButton.isDisable = false
+                } else {
+                    coverFromSizeLabel.textFill = GREEN
+                    coverToSizeLabel.textFill = GREEN
+                    writeCoverButton.isDisable = true
+                }
+
+                if (durationFromLabel.text != durationToLabel.text) {
+                    if (fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
+                        && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
+                    ) {
+                        durationFromLabel.textFill = YELLOW
+                        durationToLabel.textFill = YELLOW
+                    } else {
+                        durationFromLabel.textFill = RED
+                        durationToLabel.textFill = RED
+                    }
+                } else {
+                    durationFromLabel.textFill = GREEN
+                    durationToLabel.textFill = GREEN
+                }
+
+                writeAllButton.isDisable =
+                    writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable
+
+                progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
+            }
         }
     }
 }

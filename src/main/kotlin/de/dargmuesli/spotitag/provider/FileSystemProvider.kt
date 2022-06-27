@@ -9,6 +9,7 @@ import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.Persistence
+import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.ui.controller.DashboardController
@@ -114,7 +115,10 @@ object FileSystemProvider {
             val tempFileName = Paths.get(Persistence.tmpDirectory.toString(), file?.name)
             Files.createDirectories(tempFileName.parent)
             mp3File.save(tempFileName.toString())
-            file?.absolutePath?.let { Files.move(tempFileName, Paths.get(it), StandardCopyOption.REPLACE_EXISTING) }
+            file?.absolutePath?.let {
+                Files.move(tempFileName, Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
+                FileSystemCache.trackData.remove(it)
+            }
         }
     }
 }

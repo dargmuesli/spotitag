@@ -105,7 +105,7 @@ object SpotifyProvider {
                 name = track.album.name
             ),
             artists = track.artists?.let { track.artists.map { Artist(name = it.name) } },
-            durationMs = track.durationMs.toLong(),
+            durationMs = track.durationMs?.toLong(),
             id = track.id,
             name = track.name
         )
