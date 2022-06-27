@@ -13,12 +13,12 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = FileSystemConfig.Serializer::class)
 object FileSystemConfig {
-    var sourceDirectory = SimpleStringProperty().also {
+    val sourceDirectory = SimpleStringProperty().also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }
     }
-    var isSubDirectoryIncluded = SimpleBooleanProperty().also {
+    val isSubDirectoryIncluded = SimpleBooleanProperty().also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }

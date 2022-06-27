@@ -4,6 +4,6 @@ import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 
 object SpotitagState {
-    var fileSystem: FileSystemState = FileSystemState
-    var spotify: SpotifyState = SpotifyState
+    val fileSystem: FileSystemState = FileSystemState
+    val spotify: SpotifyState = SpotifyState
 }

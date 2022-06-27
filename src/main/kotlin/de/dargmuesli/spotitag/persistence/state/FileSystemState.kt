@@ -1,3 +1,9 @@
 package de.dargmuesli.spotitag.persistence.state
 
-object FileSystemState
+import de.dargmuesli.spotitag.model.music.Track
+import java.io.File
+
+object FileSystemState {
+    var currentFile: File? = null
+    var currentTrack: Track? = null
+}

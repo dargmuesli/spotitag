@@ -12,12 +12,12 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = SpotifyConfig.Serializer::class)
 object SpotifyConfig {
-    var clientId = SimpleStringProperty().also {
+    val clientId = SimpleStringProperty().also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }
     }
-    var clientSecret = SimpleStringProperty().also {
+    val clientSecret = SimpleStringProperty().also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }

@@ -1,13 +1,17 @@
 package de.dargmuesli.spotitag.ui.controller
 
 import de.dargmuesli.spotitag.MainApp
+import de.dargmuesli.spotitag.model.enums.Id3Properties
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.PersistenceTypes
 import de.dargmuesli.spotitag.persistence.SpotitagConfig
 import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.cache.SpotifyCache
 import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
+import de.dargmuesli.spotitag.persistence.state.FileSystemState
+import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.provider.FileSystemProvider
+import de.dargmuesli.spotitag.provider.FileSystemProvider.writeMusicFile
 import de.dargmuesli.spotitag.provider.SpotifyProvider
 import de.dargmuesli.spotitag.provider.SpotifyProvider.getTrackFromSpotifyTrack
 import de.dargmuesli.spotitag.ui.SpotitagNotification
@@ -55,7 +59,7 @@ class DashboardController : CoroutineScope {
     }
 
     private val fileList = observableArrayList<File>()
-    private var fileListIndex: SimpleIntegerProperty = SimpleIntegerProperty(-1)
+    private val fileListIndex: SimpleIntegerProperty = SimpleIntegerProperty(-1)
 
     private val directoryChooser = DirectoryChooser()
 
@@ -253,32 +257,32 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private fun onWriteTitle() {
-
+        writeMusicFile(Id3Properties.TITLE)
     }
 
     @FXML
     private fun onWriteArtists() {
-
+        writeMusicFile(Id3Properties.ARTISTS)
     }
 
     @FXML
     private fun onWriteAlbum() {
-
+        writeMusicFile(Id3Properties.ALBUM)
     }
 
     @FXML
     private fun onWriteId() {
-
+        writeMusicFile(Id3Properties.ID)
     }
 
     @FXML
     private fun onWriteCover() {
-
+        writeMusicFile(Id3Properties.COVER)
     }
 
     @FXML
     private fun onWriteAll() {
-
+        writeMusicFile()
     }
 
     @FXML
@@ -349,6 +353,12 @@ class DashboardController : CoroutineScope {
         }
 
         val spotifyTrack = getTrackFromSpotifyTrack(spotifyLibTrack)
+
+        FileSystemState.currentFile = currentFile
+        FileSystemState.currentTrack = fileSystemTrack
+        SpotifyState.currentTrack = spotifyTrack
+
+        Persistence.save(PersistenceTypes.CACHE)
 
         launch(Dispatchers.JavaFx) {
             titleFromLabel.text = fileSystemTrack.name
@@ -449,7 +459,5 @@ class DashboardController : CoroutineScope {
 
             progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
         }
-
-        Persistence.save(PersistenceTypes.CACHE)
     }
 }
