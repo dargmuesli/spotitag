@@ -7,7 +7,7 @@ import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
-import de.dargmuesli.spotitag.ui.SpotitagNotification
+import de.dargmuesli.spotitag.provider.FileSystemProvider.getFileNameFromTrack
 import org.apache.commons.text.similarity.JaroWinklerDistance
 import org.apache.logging.log4j.LogManager
 import se.michaelthelin.spotify.SpotifyApi
@@ -78,11 +78,10 @@ object SpotifyProvider {
         LOGGER.debug("Getting spotify track by properties: ${id3Properties.joinToString()}")
 
         val fileName = File(musicFile.path).nameWithoutExtension
-        val tagName = ((musicFile.track.artists?.let { it.joinToString() + " - " }
-            ?: "") + musicFile.track.name).replace(Regex("/[<>:\"/\\\\|?*]/g"), "")
+        val tagName = getFileNameFromTrack(musicFile.track)
 
         if (fileName != tagName) {
-            SpotitagNotification.warn("File name (1) does not match tags (2):\n(1) $fileName\n(2) $tagName")
+            LOGGER.warn("File name (1) does not match tags (2):\n(1) $fileName\n(2) $tagName")
         }
 
         val queryList = mutableListOf<String>()
@@ -130,11 +129,11 @@ object SpotifyProvider {
             LOGGER.debug("Choosing id \"${bestTrack.id}\"")
 
             if (spotifyFileName != fileName) {
-                SpotitagNotification.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")
+                LOGGER.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")
             }
 
             return bestTrack
-        } else {
+        } else if (id3Properties.size > 1) {
             return getSpotifyTrack(musicFile, *id3Properties.sliceArray(0..(id3Properties.size - 2)))
         }
 

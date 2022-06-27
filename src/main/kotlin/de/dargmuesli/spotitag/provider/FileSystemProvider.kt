@@ -9,6 +9,7 @@ import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.model.music.Track
 import de.dargmuesli.spotitag.persistence.Persistence
+import de.dargmuesli.spotitag.persistence.PersistenceTypes
 import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
@@ -20,6 +21,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
+import kotlin.io.path.extension
 
 object FileSystemProvider {
     private val LOGGER = LogManager.getLogger()
@@ -95,15 +97,15 @@ object FileSystemProvider {
                 }
             }
 
-            if (properties.contains(Id3Properties.ID)) {
-                track?.id?.let {
-                    id3v2Tag.audioSourceUrl = it
-                }
-            }
-
             if (properties.contains(Id3Properties.COVER)) {
                 track?.album?.coverBase64?.let {
                     id3v2Tag.setAlbumImage(Base64.getDecoder().decode(it), "jpg")
+                }
+            }
+
+            if (properties.contains(Id3Properties.ID)) {
+                track?.id?.let {
+                    id3v2Tag.audioSourceUrl = it
                 }
             }
 
@@ -119,9 +121,24 @@ object FileSystemProvider {
             Files.createDirectories(tempFileName.parent)
             mp3File.save(tempFileName.toString())
             file?.absolutePath?.let {
-                Files.move(tempFileName, Paths.get(it), StandardCopyOption.REPLACE_EXISTING)
+                val path = Paths.get(it)
+                Files.move(tempFileName, path, StandardCopyOption.REPLACE_EXISTING)
                 FileSystemCache.trackData.remove(it)
+
+                if (properties.contains(Id3Properties.FILENAME)) {
+                    track?.let {
+                        val newFilePath = path.parent.resolve("${getFileNameFromTrack(track)}.${path.extension}")
+                        FileSystemCache.trackData.remove(file.absolutePath)
+                        Persistence.save(PersistenceTypes.CACHE)
+                        Files.move(path, newFilePath)
+                    }
+                }
             }
         }
+    }
+
+    fun getFileNameFromTrack(track: Track): String {
+        return ((track.artists?.let { it.joinToString() + " - " }
+            ?: "") + track.name).replace(Regex("[<>:\"/\\\\|?*]"), "").replace(Regex("\\s+"), " ")
     }
 }

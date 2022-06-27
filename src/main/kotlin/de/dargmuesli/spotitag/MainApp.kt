@@ -14,7 +14,6 @@ import java.util.*
 
 class MainApp : Application() {
     override fun start(stage: Stage) {
-
         SpotitagStage.makeSpotitagStage(stage)
         Companion.stage = stage
 

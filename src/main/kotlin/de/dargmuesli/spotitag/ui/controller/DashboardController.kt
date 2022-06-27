@@ -12,6 +12,7 @@ import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
 import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.provider.FileSystemProvider
+import de.dargmuesli.spotitag.provider.FileSystemProvider.getFileNameFromTrack
 import de.dargmuesli.spotitag.provider.FileSystemProvider.writeMusicFile
 import de.dargmuesli.spotitag.provider.SpotifyProvider
 import de.dargmuesli.spotitag.provider.SpotifyProvider.getTrackFromSpotifyTrack
@@ -44,6 +45,7 @@ import java.io.File
 import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.io.path.extension
 import kotlin.math.abs
 
 
@@ -76,9 +78,6 @@ class DashboardController : CoroutineScope {
     private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
 
     @FXML
-    private lateinit var progressBar: ProgressBar
-
-    @FXML
     private lateinit var titleFromLabel: Label
 
     @FXML
@@ -88,13 +87,16 @@ class DashboardController : CoroutineScope {
     private lateinit var albumFromLabel: Label
 
     @FXML
-    private lateinit var idFromLabel: Label
-
-    @FXML
     private lateinit var coverFromImageView: ImageView
 
     @FXML
     private lateinit var coverFromSizeLabel: Label
+
+    @FXML
+    private lateinit var idFromLabel: Label
+
+    @FXML
+    private lateinit var fileNameFromLabel: Label
 
     @FXML
     private lateinit var durationFromLabel: Label
@@ -109,13 +111,16 @@ class DashboardController : CoroutineScope {
     private lateinit var albumToLabel: Label
 
     @FXML
-    private lateinit var idToLabel: Label
-
-    @FXML
     private lateinit var coverToImageView: ImageView
 
     @FXML
     private lateinit var coverToSizeLabel: Label
+
+    @FXML
+    private lateinit var idToLabel: Label
+
+    @FXML
+    private lateinit var fileNameToLabel: Label
 
     @FXML
     private lateinit var durationToLabel: Label
@@ -130,10 +135,13 @@ class DashboardController : CoroutineScope {
     private lateinit var writeAlbumButton: Button
 
     @FXML
+    private lateinit var writeCoverButton: Button
+
+    @FXML
     private lateinit var writeIdButton: Button
 
     @FXML
-    private lateinit var writeCoverButton: Button
+    private lateinit var writeFileNameButton: Button
 
     @FXML
     private lateinit var previousButton: Button
@@ -152,6 +160,9 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var indexLabel: Label
+
+    @FXML
+    private lateinit var progressBar: ProgressBar
 
     @FXML
     fun initialize() {
@@ -295,6 +306,16 @@ class DashboardController : CoroutineScope {
     }
 
     @FXML
+    private fun onWriteCover() {
+        launch(Dispatchers.IO) {
+            writeMusicFile(Id3Properties.COVER)
+            launch(Dispatchers.JavaFx) {
+                updateView()
+            }
+        }
+    }
+
+    @FXML
     private fun onWriteId() {
         launch(Dispatchers.IO) {
             writeMusicFile(Id3Properties.ID)
@@ -305,9 +326,16 @@ class DashboardController : CoroutineScope {
     }
 
     @FXML
-    private fun onWriteCover() {
+    private fun onWriteFileName() {
         launch(Dispatchers.IO) {
-            writeMusicFile(Id3Properties.COVER)
+            writeMusicFile(Id3Properties.FILENAME)
+
+            val path = fileList[fileListIndex.value].toPath()
+            FileSystemState.currentTrack?.let {
+                fileList[fileListIndex.value] =
+                    path.parent.resolve("${getFileNameFromTrack(it)}.${path.extension}").toFile()
+            }
+
             launch(Dispatchers.JavaFx) {
                 updateView()
             }
@@ -428,7 +456,6 @@ class DashboardController : CoroutineScope {
                 titleFromLabel.text = fileSystemTrack.name
                 artistsFromLabel.text = fileSystemTrack.artists?.joinToString()
                 albumFromLabel.text = fileSystemTrack.album?.name
-                idFromLabel.text = fileSystemTrack.id
                 coverFromImageView.image = fileSystemTrack.album?.coverBase64?.let {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
@@ -440,12 +467,13 @@ class DashboardController : CoroutineScope {
                 if (fileSystemTrack.album?.coverBase64 == null) {
                     coverFromSizeLabel.text = ""
                 }
+                idFromLabel.text = fileSystemTrack.id
+                fileNameFromLabel.text = currentFile.nameWithoutExtension
                 durationFromLabel.text = fileSystemTrack.durationMs?.toString()
 
                 titleToLabel.text = spotifyTrack?.name
                 artistsToLabel.text = spotifyTrack?.artists?.joinToString()
                 albumToLabel.text = spotifyTrack?.album?.name
-                idToLabel.text = spotifyTrack?.id
                 coverToImageView.image = spotifyTrack?.album?.coverBase64?.let {
                     val byteArray = Base64.getDecoder().decode(it)
                     val byteArrayInputStream = ByteArrayInputStream(byteArray)
@@ -457,6 +485,8 @@ class DashboardController : CoroutineScope {
                 if (spotifyTrack?.album?.coverBase64 == null) {
                     coverToSizeLabel.text = ""
                 }
+                idToLabel.text = spotifyTrack?.id
+                fileNameToLabel.text = spotifyTrack?.let { getFileNameFromTrack(it) }
                 durationToLabel.text = spotifyTrack?.durationMs?.toString()
 
                 if (titleFromLabel.text != titleToLabel.text) {
@@ -489,6 +519,21 @@ class DashboardController : CoroutineScope {
                     writeAlbumButton.isDisable = true
                 }
 
+                if (spotifyTrack?.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
+                    if (SpotitagConfig.isCoverChecked.value) {
+                        coverFromSizeLabel.textFill = RED
+                        coverToSizeLabel.textFill = RED
+                        writeCoverButton.isDisable = false
+                    } else {
+                        coverFromSizeLabel.textFill = YELLOW
+                        coverToSizeLabel.textFill = YELLOW
+                    }
+                } else {
+                    coverFromSizeLabel.textFill = GREEN
+                    coverToSizeLabel.textFill = GREEN
+                    writeCoverButton.isDisable = true
+                }
+
                 if (idFromLabel.text != idToLabel.text) {
                     if (SpotitagConfig.isIdChecked.value) {
                         idFromLabel.textFill = RED
@@ -504,19 +549,14 @@ class DashboardController : CoroutineScope {
                     writeIdButton.isDisable = true
                 }
 
-                if (spotifyTrack?.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
-                    if (SpotitagConfig.isCoverChecked.value) {
-                        coverFromSizeLabel.textFill = RED
-                        coverToSizeLabel.textFill = RED
-                        writeCoverButton.isDisable = false
-                    } else {
-                        coverFromSizeLabel.textFill = YELLOW
-                        coverToSizeLabel.textFill = YELLOW
-                    }
+                if (fileNameFromLabel.text != fileNameToLabel.text) {
+                    fileNameFromLabel.textFill = RED
+                    fileNameToLabel.textFill = RED
+                    writeFileNameButton.isDisable = false
                 } else {
-                    coverFromSizeLabel.textFill = GREEN
-                    coverToSizeLabel.textFill = GREEN
-                    writeCoverButton.isDisable = true
+                    fileNameFromLabel.textFill = GREEN
+                    fileNameToLabel.textFill = GREEN
+                    writeFileNameButton.isDisable = true
                 }
 
                 val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack?.durationMs != null
@@ -539,7 +579,7 @@ class DashboardController : CoroutineScope {
                 openSpotifyButton.isDisable = spotifyTrack == null
 
                 writeAllButton.isDisable =
-                    writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable
+                    writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeCoverButton.isDisable && writeIdButton.isDisable && writeFileNameButton.isDisable
 
                 progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
 

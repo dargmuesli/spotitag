@@ -3,7 +3,7 @@ package de.dargmuesli.spotitag.model.enums
 enum class Id3Properties(
     val type: String
 ) {
-    TITLE("title"), ARTISTS("artists"), ALBUM("album"), ID("id"), COVER("cover");
+    TITLE("title"), ARTISTS("artists"), ALBUM("album"), ID("id"), COVER("cover"), FILENAME("filename");
 
     companion object {
         private val map: MutableMap<String, Id3Properties> = HashMap()

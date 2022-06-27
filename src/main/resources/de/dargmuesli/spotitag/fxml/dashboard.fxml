@@ -49,53 +49,63 @@
                         <RowConstraints/>
                         <RowConstraints/>
                         <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
                     </rowConstraints>
                     <opaqueInsets>
                         <Insets/>
                     </opaqueInsets>
-                    <Label text="%title"/>
-                    <Label text="%artists" GridPane.rowIndex="1"/>
-                    <Label text="%album" GridPane.rowIndex="2"/>
-                    <Label text="%id" GridPane.rowIndex="3"/>
+                    <Label text="%fileSystem" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="%spotify" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                    <Label text="%title" GridPane.rowIndex="1"/>
+                    <Label text="%artists" GridPane.rowIndex="2"/>
+                    <Label text="%album" GridPane.rowIndex="3"/>
                     <Label text="%cover" GridPane.rowIndex="4"/>
-                    <Label text="%duration" GridPane.rowIndex="5"/>
-                    <Label fx:id="titleFromLabel" text="%placeholder" GridPane.columnIndex="1"/>
-                    <Label fx:id="artistsFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <Label fx:id="albumFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <Label fx:id="idFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    <Label text="%id" GridPane.rowIndex="5"/>
+                    <Label text="%fileName" GridPane.rowIndex="6"/>
+                    <Label text="%duration" GridPane.rowIndex="7"/>
+                    <Label fx:id="titleFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <Label fx:id="artistsFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <Label fx:id="albumFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                     <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4">
                         <ImageView fx:id="coverFromImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true"
                                    preserveRatio="true"/>
                         <Label fx:id="coverFromSizeLabel" text="%placeholder"/>
                     </VBox>
+                    <Label fx:id="idFromLabel" text="%placeholder" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                    <Label fx:id="fileNameFromLabel" GridPane.columnIndex="1" GridPane.rowIndex="6"
+                           text="%placeholder"/>
                     <Label fx:id="durationFromLabel" text="%placeholder" GridPane.columnIndex="1"
-                           GridPane.rowIndex="5"/>
-                    <Label fx:id="titleToLabel" text="%placeholder" GridPane.columnIndex="2"/>
-                    <Label fx:id="artistsToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                    <Label fx:id="albumToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
-                    <Label fx:id="idToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+                           GridPane.rowIndex="7"/>
+                    <Label fx:id="titleToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                    <Label fx:id="artistsToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                    <Label fx:id="albumToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
                     <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="4">
                         <ImageView fx:id="coverToImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true"
                                    preserveRatio="true"/>
                         <Label fx:id="coverToSizeLabel" text="%placeholder"/>
                     </VBox>
-                    <Label fx:id="durationToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+                    <Label fx:id="idToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+                    <Label fx:id="fileNameToLabel" GridPane.columnIndex="2" GridPane.rowIndex="6" text="%placeholder"/>
+                    <Label fx:id="durationToLabel" text="%placeholder" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
                     <Button fx:id="writeTitleButton" disable="true" onAction="#onWriteTitle" text="%write"
-                            GridPane.columnIndex="3"/>
-                    <Button fx:id="writeArtistsButton" disable="true" onAction="#onWriteArtists" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="1"/>
-                    <Button fx:id="writeAlbumButton" disable="true" onAction="#onWriteAlbum" text="%write"
+                    <Button fx:id="writeArtistsButton" disable="true" onAction="#onWriteArtists" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="2"/>
-                    <Button fx:id="writeIdButton" disable="true" onAction="#onWriteId" text="%write"
+                    <Button fx:id="writeAlbumButton" disable="true" onAction="#onWriteAlbum" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="3"/>
                     <Button fx:id="writeCoverButton" disable="true" onAction="#onWriteCover" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="4"/>
-                    <Button fx:id="openFileSystemButton" disable="true" onAction="#onOpenFileSystem" text="%open"
-                            GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                    <Button fx:id="openSpotifyButton" disable="true" onAction="#onOpenSpotify" text="%open"
-                            GridPane.columnIndex="2" GridPane.rowIndex="6"/>
-                    <Button fx:id="writeAllButton" disable="true" onAction="#onWriteAll" text="%writeAll"
+                    <Button fx:id="writeIdButton" disable="true" onAction="#onWriteId" text="%write"
+                            GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+                    <Button fx:id="writeFileNameButton" disable="true" onAction="#onWriteFileName" text="%write"
                             GridPane.columnIndex="3" GridPane.rowIndex="6"/>
+                    <Button fx:id="openFileSystemButton" disable="true" onAction="#onOpenFileSystem" text="%open"
+                            GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                    <Button fx:id="openSpotifyButton" disable="true" onAction="#onOpenSpotify" text="%open"
+                            GridPane.columnIndex="2" GridPane.rowIndex="8"/>
+                    <Button fx:id="writeAllButton" disable="true" onAction="#onWriteAll" text="%writeAll"
+                            GridPane.columnIndex="3" GridPane.rowIndex="8"/>
                 </GridPane>
             </HBox>
             <HBox alignment="CENTER" spacing="10.0">
