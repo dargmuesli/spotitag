@@ -66,7 +66,6 @@ object Persistence {
     fun load(vararg types: PersistenceTypes) {
         if (types.isEmpty()) {
             load(*fileMap.keys.toTypedArray())
-            SpotitagState.refresh()
             isInitialized.set(true)
         } else {
             for (type in types) {

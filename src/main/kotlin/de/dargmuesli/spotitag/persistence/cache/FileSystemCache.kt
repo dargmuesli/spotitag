@@ -1,9 +1,7 @@
 package de.dargmuesli.spotitag.persistence.cache
 
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
-import de.dargmuesli.spotitag.persistence.state.FileSystemState.updateCounter
 import javafx.collections.FXCollections.observableHashMap
-import javafx.collections.MapChangeListener
 import javafx.collections.ObservableMap
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -15,19 +13,7 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = FileSystemCache.Serializer::class)
 object FileSystemCache : IProviderCache<MusicFile> {
-    override var trackData: ObservableMap<String, MusicFile> = observableHashMap<String, MusicFile>().also {
-        it.addListener(
-            MapChangeListener { change ->
-                if (change.valueAdded != null) {
-                    updateCounter(change.valueAdded) { x -> x + 1 }
-                }
-
-                if (change.valueRemoved != null) {
-                    updateCounter(change.valueRemoved) { x -> x - 1 }
-                }
-            }
-        )
-    }
+    override var trackData: ObservableMap<String, MusicFile> = observableHashMap()
 
     object Serializer : KSerializer<FileSystemCache> {
         override val descriptor: SerialDescriptor = FileSystemCacheSurrogate.serializer().descriptor

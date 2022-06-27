@@ -2,7 +2,6 @@ package de.dargmuesli.spotitag.persistence
 
 import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
 import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
-import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleLongProperty
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName

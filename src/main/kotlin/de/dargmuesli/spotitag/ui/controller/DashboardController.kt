@@ -158,19 +158,6 @@ class DashboardController : CoroutineScope {
             }
         }
 
-//        arrayOf(
-//            FileSystemState.filesFound to filesFoundLabel,
-//            FileSystemState.filesFoundWithSpotifyId to filesFoundWithSpotifyIdLabel,
-//            FileSystemState.filesFoundWithSpotitagVersion to filesFoundWithSpotitagVersionLabel,
-//            FileSystemState.filesFoundWithSpotitagVersionNewest to filesFoundWithSpotitagVersionNewestLabel
-//        ).forEach {
-//            it.first.addListener { _ ->
-//                launch(Dispatchers.JavaFx) {
-//                    it.second.text = it.first.value.toString()
-//                }
-//            }
-//        }
-
         Persistence.isInitialized.addListener { _ ->
             launch(Dispatchers.JavaFx) {
                 container.isDisable = !Persistence.isInitialized.value
