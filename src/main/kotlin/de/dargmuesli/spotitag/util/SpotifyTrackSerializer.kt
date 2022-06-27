@@ -1,6 +1,7 @@
 package de.dargmuesli.spotitag.util
 
-import com.google.gson.Gson
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -14,7 +15,11 @@ class SpotifyTrackSerializer {
         override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Track", PrimitiveKind.STRING)
 
         override fun serialize(encoder: Encoder, value: Track) {
-            encoder.encodeString(Gson().toJson(value))
+            encoder.encodeString(
+                GsonBuilder()
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .create().toJson(value)
+            )
         }
 
         override fun deserialize(decoder: Decoder): Track {
