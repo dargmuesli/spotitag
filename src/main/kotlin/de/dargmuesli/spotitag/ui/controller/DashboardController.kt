@@ -387,11 +387,11 @@ class DashboardController : CoroutineScope {
 
             val currentFile = fileList[fileListIndex.value]
 
+            LOGGER.info("Processing \"${currentFile.name}\"...")
             val musicFile = if (FileSystemCache.trackData.containsKey(currentFile.absolutePath)) {
-                LOGGER.debug("Using cache for \"${currentFile.name}\".")
+                LOGGER.debug("Using file system cache for \"${currentFile.name}\".")
                 FileSystemCache.trackData[currentFile.absolutePath]
             } else {
-                LOGGER.info("Processing \"${currentFile.name}\"...")
                 FileSystemProvider.getMusicFile(currentFile).also {
                     FileSystemCache.trackData[it.path] = it
                 }
@@ -404,6 +404,7 @@ class DashboardController : CoroutineScope {
 
             val fileSystemTrack = musicFile.track
             val spotifyLibTrack = if (SpotifyCache.trackData.containsKey(fileSystemTrack.id)) {
+                LOGGER.debug("Using spotify cache for \"${currentFile.name}\"...")
                 SpotifyCache.trackData[fileSystemTrack.id]
             } else {
                 SpotifyProvider.getSpotifyTrack(musicFile)?.also {

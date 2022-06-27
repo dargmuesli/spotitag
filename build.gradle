@@ -15,6 +15,7 @@ repositories {
 }
 
 ext {
+    apacheCommonsVersion = '1.9'
     ikonliVersion = '12.3.1'
     junitVersion = '5.8.2'
     kotlinCoroutineVersion = '1.6.3'
@@ -49,6 +50,7 @@ javafx {
 
 dependencies {
     implementation("com.mpatric:mp3agic:${mp3agicVersion}")
+    implementation("org.apache.commons:commons-text:${apacheCommonsVersion}")
     implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}")
