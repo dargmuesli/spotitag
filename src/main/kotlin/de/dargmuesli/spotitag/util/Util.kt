@@ -1,9 +1,11 @@
 package de.dargmuesli.spotitag.util
 
+import javafx.scene.control.TextFormatter
 import java.text.CharacterIterator
 import java.text.StringCharacterIterator
+import java.util.function.UnaryOperator
 
-object FileUtil {
+object Util {
     // https://stackoverflow.com/a/3758880/4682621
     fun humanReadableByteCountBin(bytes: Long): String? {
         val absB = if (bytes == Long.MIN_VALUE) Long.MAX_VALUE else Math.abs(bytes)
@@ -22,4 +24,10 @@ object FileUtil {
         return java.lang.String.format("%.1f %ciB", value / 1024.0, ci.current())
     }
 
+    val integerFilter: UnaryOperator<TextFormatter.Change> = UnaryOperator<TextFormatter.Change> { change ->
+        if (change.controlNewText.matches(Regex("\\d*"))) {
+            return@UnaryOperator change
+        }
+        return@UnaryOperator null
+    }
 }

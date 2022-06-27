@@ -3,6 +3,7 @@ package de.dargmuesli.spotitag.ui.controller
 import de.dargmuesli.spotitag.MainApp
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.PersistenceTypes
+import de.dargmuesli.spotitag.persistence.SpotitagConfig
 import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.cache.SpotifyCache
 import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
@@ -11,7 +12,7 @@ import de.dargmuesli.spotitag.provider.SpotifyProvider
 import de.dargmuesli.spotitag.provider.SpotifyProvider.getTrackFromSpotifyTrack
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.SpotitagStage
-import de.dargmuesli.spotitag.util.FileUtil
+import de.dargmuesli.spotitag.util.Util
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.FXCollections.observableArrayList
 import javafx.collections.ListChangeListener
@@ -36,6 +37,7 @@ import java.io.ByteArrayInputStream
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
+import kotlin.math.abs
 
 
 class DashboardController : CoroutineScope {
@@ -47,6 +49,8 @@ class DashboardController : CoroutineScope {
 
         val RED: Paint = Paint.valueOf("#aa0000")
         val GREEN: Paint = Paint.valueOf("#00aa00")
+        val YELLOW: Paint = Paint.valueOf("#aaaa00")
+
         val LOGGER: Logger = LogManager.getLogger()
     }
 
@@ -368,7 +372,7 @@ class DashboardController : CoroutineScope {
                 val byteArray = Base64.getDecoder().decode(it)
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val image = ImageIO.read(byteArrayInputStream)
-                coverFromSizeLabel.text = FileUtil.humanReadableByteCountBin(byteArray.size.toLong())
+                coverFromSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
@@ -382,7 +386,7 @@ class DashboardController : CoroutineScope {
                 val byteArray = Base64.getDecoder().decode(it)
                 val byteArrayInputStream = ByteArrayInputStream(byteArray)
                 val image = ImageIO.read(byteArrayInputStream)
-                coverToSizeLabel.text = FileUtil.humanReadableByteCountBin(byteArray.size.toLong())
+                coverToSizeLabel.text = Util.humanReadableByteCountBin(byteArray.size.toLong())
                 byteArrayInputStream.close()
                 SwingFXUtils.toFXImage(image, null)
             }
@@ -439,8 +443,15 @@ class DashboardController : CoroutineScope {
             }
 
             if (durationFromLabel.text != durationToLabel.text) {
-                durationFromLabel.textFill = RED
-                durationToLabel.textFill = RED
+                if (fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
+                    && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
+                ) {
+                    durationFromLabel.textFill = YELLOW
+                    durationToLabel.textFill = YELLOW
+                } else {
+                    durationFromLabel.textFill = RED
+                    durationToLabel.textFill = RED
+                }
             } else {
                 durationFromLabel.textFill = GREEN
                 durationToLabel.textFill = GREEN
