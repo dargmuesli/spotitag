@@ -5,6 +5,7 @@ import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
+import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.controller.DashboardController
 import se.michaelthelin.spotify.SpotifyApi
 import se.michaelthelin.spotify.model_objects.specification.Track
@@ -80,7 +81,7 @@ object SpotifyProvider {
                 DashboardController.LOGGER.debug("Choosing id \"${track.id}\"")
 
                 if (spotifyFileName != fileName) {
-                    DashboardController.LOGGER.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) for $fileName")
+                    SpotitagNotification.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")
                 }
 
                 track

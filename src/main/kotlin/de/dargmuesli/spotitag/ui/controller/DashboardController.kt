@@ -332,7 +332,7 @@ class DashboardController : CoroutineScope {
             return
         }
 
-        if (fileListIndex.value == fileList.size -1) {
+        if (fileListIndex.value == fileList.size - 1) {
             return
         }
 
@@ -388,7 +388,7 @@ class DashboardController : CoroutineScope {
             }
 
             if (spotifyLibTrack == null) {
-                LOGGER.warn("Spotify track not found!")
+                SpotitagNotification.warn("Spotify track not found for \"${currentFile.name}\"!")
                 return@launch
             }
 
@@ -489,10 +489,11 @@ class DashboardController : CoroutineScope {
                     writeCoverButton.isDisable = true
                 }
 
-                if (durationFromLabel.text != durationToLabel.text) {
-                    if (fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
+                val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack.durationMs != null
                         && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
-                    ) {
+
+                if (durationFromLabel.text != durationToLabel.text) {
+                    if (isDurationTolerated) {
                         durationFromLabel.textFill = YELLOW
                         durationToLabel.textFill = YELLOW
                     } else {
@@ -509,7 +510,7 @@ class DashboardController : CoroutineScope {
 
                 progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
 
-                if (writeAllButton.isDisable && SpotitagConfig.isEqualSkipped.value) {
+                if (writeAllButton.isDisable && SpotitagConfig.isEqualSkipped.value && isDurationTolerated) {
                     if (direction == Direction.FORWARD) {
                         onNext()
                     } else if (direction == Direction.BACKWARD) {
