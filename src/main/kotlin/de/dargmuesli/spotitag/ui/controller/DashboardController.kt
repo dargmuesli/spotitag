@@ -451,9 +451,14 @@ class DashboardController : CoroutineScope {
                 }
 
                 if (idFromLabel.text != idToLabel.text) {
-                    idFromLabel.textFill = RED
-                    idToLabel.textFill = RED
-                    writeIdButton.isDisable = false
+                    if (SpotitagConfig.isIdChecked.value) {
+                        idFromLabel.textFill = RED
+                        idToLabel.textFill = RED
+                        writeIdButton.isDisable = false
+                    } else {
+                        idFromLabel.textFill = YELLOW
+                        idToLabel.textFill = YELLOW
+                    }
                 } else {
                     idFromLabel.textFill = GREEN
                     idToLabel.textFill = GREEN
@@ -461,9 +466,14 @@ class DashboardController : CoroutineScope {
                 }
 
                 if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
-                    coverFromSizeLabel.textFill = RED
-                    coverToSizeLabel.textFill = RED
-                    writeCoverButton.isDisable = false
+                    if (SpotitagConfig.isIdChecked.value) {
+                        coverFromSizeLabel.textFill = RED
+                        coverToSizeLabel.textFill = RED
+                        writeCoverButton.isDisable = false
+                    } else {
+                        coverFromSizeLabel.textFill = YELLOW
+                        coverToSizeLabel.textFill = YELLOW
+                    }
                 } else {
                     coverFromSizeLabel.textFill = GREEN
                     coverToSizeLabel.textFill = GREEN
