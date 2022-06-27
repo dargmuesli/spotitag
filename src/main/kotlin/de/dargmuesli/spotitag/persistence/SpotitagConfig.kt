@@ -16,12 +16,22 @@ object SpotitagConfig : AbstractSerializable() {
     var fileSystem: FileSystemConfig = FileSystemConfig
     var spotify: SpotifyConfig = SpotifyConfig
 
-    val isIdChecked = SimpleBooleanProperty(true).also {
+    val isAlbumChecked = SimpleBooleanProperty(true).also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }
     }
     val isCoverChecked = SimpleBooleanProperty(true).also {
+        it.addListener { _ ->
+            Persistence.save(PersistenceTypes.CONFIG)
+        }
+    }
+    val isIdChecked = SimpleBooleanProperty(true).also {
+        it.addListener { _ ->
+            Persistence.save(PersistenceTypes.CONFIG)
+        }
+    }
+    val isFileNameChecked = SimpleBooleanProperty(true).also {
         it.addListener { _ ->
             Persistence.save(PersistenceTypes.CONFIG)
         }
@@ -46,8 +56,10 @@ object SpotitagConfig : AbstractSerializable() {
                 SpotitagConfigSurrogate(
                     fileSystem,
                     spotify,
-                    isIdChecked.value,
+                    isAlbumChecked.value,
                     isCoverChecked.value,
+                    isIdChecked.value,
+                    isFileNameChecked.value,
                     durationTolerance.value,
                     isEqualSkipped.value
                 )
@@ -58,8 +70,10 @@ object SpotitagConfig : AbstractSerializable() {
             val spotitagConfig = decoder.decodeSerializableValue(SpotitagConfigSurrogate.serializer())
             fileSystem = spotitagConfig.fileSystem
             spotify = spotitagConfig.spotify
-            isIdChecked.set(spotitagConfig.isIdChecked)
+            isAlbumChecked.set(spotitagConfig.isAlbumChecked)
             isCoverChecked.set(spotitagConfig.isCoverChecked)
+            isIdChecked.set(spotitagConfig.isIdChecked)
+            isFileNameChecked.set(spotitagConfig.isFileNameChecked)
             durationTolerance.set(spotitagConfig.durationTolerance)
             isEqualSkipped.set(spotitagConfig.isEqualSkipped)
             return SpotitagConfig
@@ -71,8 +85,10 @@ object SpotitagConfig : AbstractSerializable() {
     private data class SpotitagConfigSurrogate(
         val fileSystem: FileSystemConfig,
         val spotify: SpotifyConfig,
-        val isIdChecked: Boolean,
+        val isAlbumChecked: Boolean,
         val isCoverChecked: Boolean,
+        val isIdChecked: Boolean,
+        val isFileNameChecked: Boolean,
         val durationTolerance: Long,
         val isEqualSkipped: Boolean
     )

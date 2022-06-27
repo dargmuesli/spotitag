@@ -510,9 +510,14 @@ class DashboardController : CoroutineScope {
                 }
 
                 if (albumFromLabel.text != albumToLabel.text) {
-                    albumFromLabel.textFill = RED
-                    albumToLabel.textFill = RED
-                    writeAlbumButton.isDisable = false
+                    if (SpotitagConfig.isAlbumChecked.value) {
+                        albumFromLabel.textFill = RED
+                        albumToLabel.textFill = RED
+                        writeAlbumButton.isDisable = false
+                    } else {
+                        albumFromLabel.textFill = YELLOW
+                        albumToLabel.textFill = YELLOW
+                    }
                 } else {
                     albumFromLabel.textFill = GREEN
                     albumToLabel.textFill = GREEN
@@ -550,9 +555,14 @@ class DashboardController : CoroutineScope {
                 }
 
                 if (fileNameFromLabel.text != fileNameToLabel.text) {
-                    fileNameFromLabel.textFill = RED
-                    fileNameToLabel.textFill = RED
-                    writeFileNameButton.isDisable = false
+                    if (SpotitagConfig.isFileNameChecked.value) {
+                        fileNameFromLabel.textFill = RED
+                        fileNameToLabel.textFill = RED
+                        writeFileNameButton.isDisable = false
+                    } else {
+                        fileNameFromLabel.textFill = YELLOW
+                        fileNameToLabel.textFill = YELLOW
+                    }
                 } else {
                     fileNameFromLabel.textFill = GREEN
                     fileNameToLabel.textFill = GREEN

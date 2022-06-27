@@ -74,6 +74,8 @@
                     <RowConstraints/>
                     <RowConstraints/>
                     <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
                 </rowConstraints>
                 <opaqueInsets>
                     <Insets/>
@@ -81,22 +83,30 @@
                 <VBox.margin>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </VBox.margin>
-                <Label text="%isIdChecked" GridPane.columnIndex="0"
+                <Label text="%isAlbumChecked" GridPane.columnIndex="0"
                        GridPane.rowIndex="0"/>
-                <CheckBox fx:id="isIdCheckedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
-                          GridPane.rowIndex="0" HBox.hgrow="ALWAYS" onAction="#onIsIdCheckedInput"/>
+                <CheckBox fx:id="isAlbumCheckedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
+                          GridPane.rowIndex="0" HBox.hgrow="ALWAYS" onAction="#onIsAlbumCheckedInput"/>
                 <Label text="%isCoverChecked" GridPane.columnIndex="0"
                        GridPane.rowIndex="1"/>
                 <CheckBox fx:id="isCoverCheckedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
                           GridPane.rowIndex="1" HBox.hgrow="ALWAYS" onAction="#onIsCoverCheckedInput"/>
-                <Label text="%durationToleranceInMilliseconds" GridPane.columnIndex="0"
+                <Label text="%isIdChecked" GridPane.columnIndex="0"
                        GridPane.rowIndex="2"/>
-                <TextField fx:id="durationToleranceTextField" prefHeight="25.0" GridPane.columnIndex="1"
-                           GridPane.rowIndex="2" HBox.hgrow="ALWAYS" onKeyTyped="#onDurationToleranceInput"/>
-                <Label text="%isEqualSkipped" GridPane.columnIndex="0"
+                <CheckBox fx:id="isIdCheckedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
+                          GridPane.rowIndex="2" HBox.hgrow="ALWAYS" onAction="#onIsIdCheckedInput"/>
+                <Label text="%isFileNameChecked" GridPane.columnIndex="0"
                        GridPane.rowIndex="3"/>
+                <CheckBox fx:id="isFileNameCheckedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
+                          GridPane.rowIndex="3" HBox.hgrow="ALWAYS" onAction="#onIsFileNameCheckedInput"/>
+                <Label text="%durationToleranceInMilliseconds" GridPane.columnIndex="0"
+                       GridPane.rowIndex="4"/>
+                <TextField fx:id="durationToleranceTextField" prefHeight="25.0" GridPane.columnIndex="1"
+                           GridPane.rowIndex="4" HBox.hgrow="ALWAYS" onKeyTyped="#onDurationToleranceInput"/>
+                <Label text="%isEqualSkipped" GridPane.columnIndex="0"
+                       GridPane.rowIndex="5"/>
                 <CheckBox fx:id="isEqualSkippedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
-                          GridPane.rowIndex="3" HBox.hgrow="ALWAYS" onAction="#onIsEqualSkippedInput"/>
+                          GridPane.rowIndex="5" HBox.hgrow="ALWAYS" onAction="#onIsEqualSkippedInput"/>
             </GridPane>
         </VBox>
     </VBox>
