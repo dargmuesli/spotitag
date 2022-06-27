@@ -12,6 +12,7 @@ module de.dargmuesli.spotitag {
     requires kotlinx.serialization.core;
     requires kotlinx.serialization.json;
     requires mp3agic;
+    requires nv.i18n;
     requires org.apache.logging.log4j;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.fontawesome5;

@@ -1,5 +1,6 @@
 package de.dargmuesli.spotitag.provider
 
+import com.neovisionaries.i18n.CountryCode
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
 import de.dargmuesli.spotitag.model.music.Album
 import de.dargmuesli.spotitag.model.music.Artist
@@ -7,6 +8,7 @@ import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.ui.SpotitagNotification
 import de.dargmuesli.spotitag.ui.controller.DashboardController
+import org.apache.logging.log4j.LogManager
 import se.michaelthelin.spotify.SpotifyApi
 import se.michaelthelin.spotify.model_objects.specification.Track
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
@@ -18,6 +20,7 @@ import javax.imageio.ImageIO
 
 
 object SpotifyProvider {
+    private val LOGGER = LogManager.getLogger()
     private val spotifyApiBuilder: SpotifyApi.Builder = SpotifyApi.builder()
         .setClientId(SpotifyConfig.clientId.value)
         .setClientSecret(SpotifyConfig.clientSecret.value)
@@ -67,18 +70,31 @@ object SpotifyProvider {
         val tagName = (musicFile.track.artists?.let { it.joinToString() + " - " } ?: "") + musicFile.track.name
 
         return if (fileName != tagName) {
-            DashboardController.LOGGER.warn("File name (1) does not match tags (2):\n(1) $fileName\n(2) $tagName")
+            SpotitagNotification.warn("File name (1) does not match tags (2):\n(1) $fileName\n(2) $tagName")
             null
         } else {
+            val queryList = mutableListOf<String>()
+            musicFile.track.artists?.let {
+                queryList.add("artist:\"" + it.joinToString("\" OR \"") + "\"")
+            }
+            musicFile.track.name?.let {
+                queryList.add("track:\"" + it.split(" ").joinToString("\" OR \"") + "\"")
+            }
+            musicFile.track.album?.name?.let {
+                queryList.add("album:\"" + it.split(" ").joinToString("\" OR \"") + "\"")
+            }
+            val query = queryList.joinToString(" ")
+            LOGGER.debug("Query: '${query}'")
+
             val trackPaging =
-                spotifyApi.searchTracks(tagName.split(" - ").joinToString(" ")).build().execute()
-            DashboardController.LOGGER.debug("${trackPaging.total} found!")
+                spotifyApi.searchTracks(query).market(CountryCode.SE).build().execute()
+            LOGGER.debug("${trackPaging.total} found!")
 
             if (trackPaging.items.isNotEmpty()) {
                 val track = trackPaging.items[0]
                 val spotifyFileName =
                     track.artists?.let { it.joinToString { artistSimplified -> artistSimplified.name } + " - " } + track.name
-                DashboardController.LOGGER.debug("Choosing id \"${track.id}\"")
+                LOGGER.debug("Choosing id \"${track.id}\"")
 
                 if (spotifyFileName != fileName) {
                     SpotitagNotification.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")

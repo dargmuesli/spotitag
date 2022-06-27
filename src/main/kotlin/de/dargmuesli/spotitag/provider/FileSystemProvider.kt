@@ -14,6 +14,7 @@ import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.ui.controller.DashboardController
 import de.dargmuesli.spotitag.util.ID3v2TXXXFrameData
+import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -21,11 +22,13 @@ import java.nio.file.StandardCopyOption
 import java.util.*
 
 object FileSystemProvider {
+    private val LOGGER = LogManager.getLogger()
+
     fun getMusicFile(file: File): MusicFile {
         val mp3File = Mp3File(file)
 
         if (!mp3File.hasId3v1Tag()) {
-            DashboardController.LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
+            LOGGER.warn("File \"${mp3File.filename}\" does not have Id3v1 Tag!")
         }
 
         if (!mp3File.hasId3v2Tag()) {
@@ -35,7 +38,7 @@ object FileSystemProvider {
         val id3v2Tag = mp3File.id3v2Tag
 
         if (id3v2Tag.version != "4.0") {
-            DashboardController.LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
+            LOGGER.warn("File \"${mp3File.filename}\" does not have the preferred Id3v2 version! (${id3v2Tag.version} instead of 4.0)")
         }
 
         val version: EncodedText? = ID3v2TXXXFrameData.extract(
@@ -48,11 +51,11 @@ object FileSystemProvider {
             file.absolutePath,
             Track(
                 album = Album(
-                    artists = id3v2Tag.albumArtist?.let { listOf(Artist(name = id3v2Tag.albumArtist)) },
+                    artists = id3v2Tag.albumArtist?.let { artists -> artists.split(", ").map { Artist(name = it) } },
                     coverBase64 = Base64.getEncoder().encodeToString(id3v2Tag.albumImage),
                     name = id3v2Tag.album
                 ),
-                artists = id3v2Tag.artist?.let { listOf(Artist(name = id3v2Tag.artist)) },
+                artists = id3v2Tag.artist?.let { artists -> artists.split(", ").map { Artist(name = it) } },
                 durationMs = mp3File.lengthInMilliseconds,
                 id = id3v2Tag.audioSourceUrl,
                 name = id3v2Tag.title

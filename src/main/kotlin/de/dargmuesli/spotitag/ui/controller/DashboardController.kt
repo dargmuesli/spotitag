@@ -412,7 +412,7 @@ class DashboardController : CoroutineScope {
             }
 
             if (spotifyLibTrack == null) {
-                SpotitagNotification.warn("Spotify track not found for \"${currentFile.name}\"!")
+                SpotitagNotification.warn("Spotify track not found for \"${currentFile.nameWithoutExtension}\"!")
             }
 
             val spotifyTrack = spotifyLibTrack?.let { getTrackFromSpotifyTrack(it) }
