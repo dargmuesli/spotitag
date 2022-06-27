@@ -9,8 +9,8 @@ enum class Id3Properties(
         private val map: MutableMap<String, Id3Properties> = HashMap()
 
         init {
-            for (albumType in values()) {
-                map[albumType.type] = albumType
+            for (id3Property in values()) {
+                map[id3Property.type] = id3Property
             }
         }
 

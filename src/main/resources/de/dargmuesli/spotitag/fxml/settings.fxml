@@ -93,6 +93,10 @@
                        GridPane.rowIndex="2"/>
                 <TextField fx:id="durationToleranceTextField" prefHeight="25.0" GridPane.columnIndex="1"
                            GridPane.rowIndex="2" HBox.hgrow="ALWAYS" onKeyTyped="#onDurationToleranceInput"/>
+                <Label text="%isEqualSkipped" GridPane.columnIndex="0"
+                       GridPane.rowIndex="3"/>
+                <CheckBox fx:id="isEqualSkippedCheckBox" prefHeight="25.0" GridPane.columnIndex="1"
+                          GridPane.rowIndex="3" HBox.hgrow="ALWAYS" onAction="#onIsEqualSkippedInput"/>
             </GridPane>
         </VBox>
     </VBox>

@@ -31,6 +31,11 @@ object SpotitagConfig : AbstractSerializable() {
             Persistence.save(PersistenceTypes.CONFIG)
         }
     }
+    val isEqualSkipped = SimpleBooleanProperty(false).also {
+        it.addListener { _ ->
+            Persistence.save(PersistenceTypes.CONFIG)
+        }
+    }
 
     object Serializer : KSerializer<SpotitagConfig> {
         override val descriptor: SerialDescriptor = SpotitagConfigSurrogate.serializer().descriptor
@@ -43,7 +48,8 @@ object SpotitagConfig : AbstractSerializable() {
                     spotify,
                     isIdChecked.value,
                     isCoverChecked.value,
-                    durationTolerance.value
+                    durationTolerance.value,
+                    isEqualSkipped.value
                 )
             )
         }
@@ -55,6 +61,7 @@ object SpotitagConfig : AbstractSerializable() {
             isIdChecked.set(spotitagConfig.isIdChecked)
             isCoverChecked.set(spotitagConfig.isCoverChecked)
             durationTolerance.set(spotitagConfig.durationTolerance)
+            isEqualSkipped.set(spotitagConfig.isEqualSkipped)
             return SpotitagConfig
         }
     }
@@ -66,6 +73,7 @@ object SpotitagConfig : AbstractSerializable() {
         val spotify: SpotifyConfig,
         val isIdChecked: Boolean,
         val isCoverChecked: Boolean,
-        val durationTolerance: Long
+        val durationTolerance: Long,
+        val isEqualSkipped: Boolean
     )
 }

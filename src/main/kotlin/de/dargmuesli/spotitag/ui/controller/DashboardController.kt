@@ -1,6 +1,7 @@
 package de.dargmuesli.spotitag.ui.controller
 
 import de.dargmuesli.spotitag.MainApp
+import de.dargmuesli.spotitag.model.enums.Direction
 import de.dargmuesli.spotitag.model.enums.Id3Properties
 import de.dargmuesli.spotitag.persistence.Persistence
 import de.dargmuesli.spotitag.persistence.PersistenceTypes
@@ -317,8 +318,12 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private fun onPrevious() {
+        if (fileListIndex.value == 0) {
+            return
+        }
+
         fileListIndex.set(fileListIndex.value - 1)
-        updateView()
+        updateView(Direction.BACKWARD)
     }
 
     @FXML
@@ -327,8 +332,12 @@ class DashboardController : CoroutineScope {
             return
         }
 
+        if (fileListIndex.value == fileList.size -1) {
+            return
+        }
+
         fileListIndex.set(fileListIndex.value + 1)
-        updateView()
+        updateView(Direction.FORWARD)
     }
 
     private fun scanFiles(file: File) {
@@ -345,7 +354,7 @@ class DashboardController : CoroutineScope {
         }
     }
 
-    private fun updateView() {
+    private fun updateView(direction: Direction? = null) {
         launch(Dispatchers.IO) {
             if (fileListIndex.value == -1) {
                 LOGGER.error("Update view called without any files!")
@@ -466,7 +475,7 @@ class DashboardController : CoroutineScope {
                 }
 
                 if (spotifyTrack.album?.coverBase64 != null && fileSystemTrack.album?.coverBase64 != spotifyTrack.album.coverBase64) {
-                    if (SpotitagConfig.isIdChecked.value) {
+                    if (SpotitagConfig.isCoverChecked.value) {
                         coverFromSizeLabel.textFill = RED
                         coverToSizeLabel.textFill = RED
                         writeCoverButton.isDisable = false
@@ -499,6 +508,14 @@ class DashboardController : CoroutineScope {
                     writeTitleButton.isDisable && writeArtistsButton.isDisable && writeAlbumButton.isDisable && writeIdButton.isDisable && writeCoverButton.isDisable
 
                 progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
+
+                if (writeAllButton.isDisable && SpotitagConfig.isEqualSkipped.value) {
+                    if (direction == Direction.FORWARD) {
+                        onNext()
+                    } else if (direction == Direction.BACKWARD) {
+                        onPrevious()
+                    }
+                }
             }
         }
     }

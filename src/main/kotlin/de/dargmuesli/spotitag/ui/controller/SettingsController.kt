@@ -30,6 +30,9 @@ class SettingsController : Initializable {
     @FXML
     private lateinit var durationToleranceTextField: TextField
 
+    @FXML
+    private lateinit var isEqualSkippedCheckBox: CheckBox
+
     override fun initialize(url: URL?, rb: ResourceBundle?) {
         spotifyClientIdTextField.text = SpotifyConfig.clientId.value
         spotifyClientSecretTextField.text = SpotifyConfig.clientSecret.value
@@ -37,6 +40,7 @@ class SettingsController : Initializable {
         isCoverCheckedCheckBox.isSelected = SpotitagConfig.isCoverChecked.value
         durationToleranceTextField.textFormatter = TextFormatter(IntegerStringConverter(), 0, integerFilter)
         durationToleranceTextField.text = SpotitagConfig.durationTolerance.value.toString()
+        isEqualSkippedCheckBox.isSelected = SpotitagConfig.isEqualSkipped.value
     }
 
     @FXML
@@ -62,5 +66,10 @@ class SettingsController : Initializable {
     @FXML
     fun onDurationToleranceInput() {
         SpotitagConfig.durationTolerance.set(durationToleranceTextField.text.toLong())
+    }
+
+    @FXML
+    fun onIsEqualSkippedInput() {
+        SpotitagConfig.isEqualSkipped.set(isEqualSkippedCheckBox.isSelected)
     }
 }
