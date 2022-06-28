@@ -32,7 +32,7 @@
                               onAction="#onSubdirectoryInclusionToggle" text="%isSubdirectoryIncluded"/>
                 </HBox>
             </VBox>
-            <Button onAction="#onGo" text="%scan"/>
+            <Button fx:id="goButton" onAction="#onGo" text="%scan" disable="true"/>
             <HBox alignment="CENTER">
                 <GridPane hgap="10.0" layoutX="30.0" layoutY="168.0" vgap="10.0">
                     <columnConstraints>

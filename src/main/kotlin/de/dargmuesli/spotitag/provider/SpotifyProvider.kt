@@ -8,6 +8,7 @@ import de.dargmuesli.spotitag.model.music.Artist
 import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.provider.FileSystemProvider.getFileNameFromTrack
+import de.dargmuesli.spotitag.ui.SpotitagNotification
 import org.apache.commons.text.similarity.JaroWinklerDistance
 import org.apache.logging.log4j.LogManager
 import se.michaelthelin.spotify.SpotifyApi
@@ -37,13 +38,17 @@ object SpotifyProvider {
     }
 
     fun authorize() {
-        val authorizationCode = spotifyApi.clientCredentials()
-            .build().execute()
+        try {
+            val authorizationCode = spotifyApi.clientCredentials()
+                .build().execute()
 
-        spotifyApi.accessToken = authorizationCode.accessToken
+            spotifyApi.accessToken = authorizationCode.accessToken
 
-        SpotifyState.accessToken = authorizationCode.accessToken
-        SpotifyState.expiresAt = System.currentTimeMillis() / 1000 + authorizationCode.expiresIn
+            SpotifyState.accessToken = authorizationCode.accessToken
+            SpotifyState.expiresAt = System.currentTimeMillis() / 1000 + authorizationCode.expiresIn
+        } catch (_: Exception) {
+            SpotitagNotification.error("Could not authenticate against Spotify! Check your credentials.")
+        }
     }
 
     fun <T> getAllPagingItems(requestBuilder: AbstractDataPagingRequest.Builder<T, *>): List<T> {

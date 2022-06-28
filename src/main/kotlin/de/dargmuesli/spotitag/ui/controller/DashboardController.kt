@@ -9,6 +9,7 @@ import de.dargmuesli.spotitag.persistence.SpotitagConfig
 import de.dargmuesli.spotitag.persistence.cache.FileSystemCache
 import de.dargmuesli.spotitag.persistence.cache.SpotifyCache
 import de.dargmuesli.spotitag.persistence.config.FileSystemConfig
+import de.dargmuesli.spotitag.persistence.config.SpotifyConfig
 import de.dargmuesli.spotitag.persistence.state.FileSystemState
 import de.dargmuesli.spotitag.persistence.state.SpotifyState
 import de.dargmuesli.spotitag.provider.FileSystemProvider
@@ -76,6 +77,9 @@ class DashboardController : CoroutineScope {
 
     @FXML
     private lateinit var isSubdirectoryIncludedCheckBox: CheckBox
+
+    @FXML
+    private lateinit var goButton: Button
 
     @FXML
     private lateinit var titleFromLabel: Label
@@ -172,25 +176,39 @@ class DashboardController : CoroutineScope {
 
     @FXML
     fun initialize() {
-        FileSystemConfig.sourceDirectory.addListener { _ ->
+        Persistence.isInitialized.addListener { _ ->
             launch(Dispatchers.JavaFx) {
-                if (directoryTextField.text != FileSystemConfig.sourceDirectory.value) {
+                container.isDisable = !Persistence.isInitialized.value
+            }
+        }
+
+        FileSystemConfig.sourceDirectory.addListener { _ ->
+            if (directoryTextField.text != FileSystemConfig.sourceDirectory.value) {
+                launch(Dispatchers.JavaFx) {
                     directoryTextField.text = FileSystemConfig.sourceDirectory.value
                 }
             }
         }
 
         FileSystemConfig.isSubDirectoryIncluded.addListener { _ ->
-            launch(Dispatchers.JavaFx) {
-                if (isSubdirectoryIncludedCheckBox.isSelected != FileSystemConfig.isSubDirectoryIncluded.value) {
+            if (isSubdirectoryIncludedCheckBox.isSelected != FileSystemConfig.isSubDirectoryIncluded.value) {
+                launch(Dispatchers.JavaFx) {
                     isSubdirectoryIncludedCheckBox.isSelected = FileSystemConfig.isSubDirectoryIncluded.value
                 }
             }
         }
 
-        Persistence.isInitialized.addListener { _ ->
+        SpotifyConfig.clientId.addListener { _ ->
             launch(Dispatchers.JavaFx) {
-                container.isDisable = !Persistence.isInitialized.value
+                goButton.isDisable =
+                    SpotifyConfig.clientId.value.isNullOrEmpty() || SpotifyConfig.clientSecret.value.isNullOrEmpty()
+            }
+        }
+
+        SpotifyConfig.clientSecret.addListener { _ ->
+            launch(Dispatchers.JavaFx) {
+                goButton.isDisable =
+                    SpotifyConfig.clientId.value.isNullOrEmpty() || SpotifyConfig.clientSecret.value.isNullOrEmpty()
             }
         }
 
