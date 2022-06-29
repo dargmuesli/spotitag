@@ -465,7 +465,7 @@ class DashboardController : CoroutineScope {
             }
 
             if (spotifyLibTrack == null) {
-                SpotitagNotification.warn("Spotify track not found for \"${currentFile.nameWithoutExtension}\"!")
+                LOGGER.warn("Spotify track not found for \"${currentFile.nameWithoutExtension}\"!")
             }
 
             val spotifyTrack = spotifyLibTrack?.let { getTrackFromSpotifyTrack(it) }
@@ -517,10 +517,13 @@ class DashboardController : CoroutineScope {
                 durationToLabel.text = spotifyTrack?.durationMs?.toString()
                 versionToLabel.text = Persistence.getVersion()
 
+                val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack?.durationMs != null
+                        && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
+
                 if (titleFromLabel.text != titleToLabel.text) {
                     titleFromLabel.textFill = RED
                     titleToLabel.textFill = RED
-                    writeTitleButton.isDisable = false
+                    writeTitleButton.isDisable = titleToLabel.text.isNullOrEmpty() || !isDurationTolerated
                 } else {
                     titleFromLabel.textFill = GREEN
                     titleToLabel.textFill = GREEN
@@ -530,7 +533,7 @@ class DashboardController : CoroutineScope {
                 if (artistsFromLabel.text != artistsToLabel.text) {
                     artistsFromLabel.textFill = RED
                     artistsToLabel.textFill = RED
-                    writeArtistsButton.isDisable = false
+                    writeArtistsButton.isDisable = artistsToLabel.text.isNullOrEmpty() || !isDurationTolerated
                 } else {
                     artistsFromLabel.textFill = GREEN
                     artistsToLabel.textFill = GREEN
@@ -541,10 +544,11 @@ class DashboardController : CoroutineScope {
                     if (SpotitagConfig.isAlbumChecked.value) {
                         albumFromLabel.textFill = RED
                         albumToLabel.textFill = RED
-                        writeAlbumButton.isDisable = false
+                        writeAlbumButton.isDisable = albumToLabel.text.isNullOrEmpty() || !isDurationTolerated
                     } else {
                         albumFromLabel.textFill = YELLOW
                         albumToLabel.textFill = YELLOW
+                        writeAlbumButton.isDisable = true
                     }
                 } else {
                     albumFromLabel.textFill = GREEN
@@ -556,10 +560,11 @@ class DashboardController : CoroutineScope {
                     if (SpotitagConfig.isCoverChecked.value) {
                         coverFromSizeLabel.textFill = RED
                         coverToSizeLabel.textFill = RED
-                        writeCoverButton.isDisable = false
+                        writeCoverButton.isDisable = coverToSizeLabel.text.isNullOrEmpty() || !isDurationTolerated
                     } else {
                         coverFromSizeLabel.textFill = YELLOW
                         coverToSizeLabel.textFill = YELLOW
+                        writeCoverButton.isDisable = true
                     }
                 } else {
                     coverFromSizeLabel.textFill = GREEN
@@ -571,10 +576,11 @@ class DashboardController : CoroutineScope {
                     if (SpotitagConfig.isIdChecked.value) {
                         idFromLabel.textFill = RED
                         idToLabel.textFill = RED
-                        writeIdButton.isDisable = false
+                        writeIdButton.isDisable = idToLabel.text.isNullOrEmpty() || !isDurationTolerated
                     } else {
                         idFromLabel.textFill = YELLOW
                         idToLabel.textFill = YELLOW
+                        writeIdButton.isDisable = true
                     }
                 } else {
                     idFromLabel.textFill = GREEN
@@ -586,19 +592,17 @@ class DashboardController : CoroutineScope {
                     if (SpotitagConfig.isFileNameChecked.value) {
                         fileNameFromLabel.textFill = RED
                         fileNameToLabel.textFill = RED
-                        writeFileNameButton.isDisable = false
+                        writeFileNameButton.isDisable = fileNameToLabel.text.isNullOrEmpty() || !isDurationTolerated
                     } else {
                         fileNameFromLabel.textFill = YELLOW
                         fileNameToLabel.textFill = YELLOW
+                        writeFileNameButton.isDisable = true
                     }
                 } else {
                     fileNameFromLabel.textFill = GREEN
                     fileNameToLabel.textFill = GREEN
                     writeFileNameButton.isDisable = true
                 }
-
-                val isDurationTolerated = fileSystemTrack.durationMs != null && spotifyTrack?.durationMs != null
-                        && abs(fileSystemTrack.durationMs - spotifyTrack.durationMs) <= SpotitagConfig.durationTolerance.value
 
                 if (durationFromLabel.text != durationToLabel.text) {
                     if (isDurationTolerated) {
@@ -629,7 +633,7 @@ class DashboardController : CoroutineScope {
 
                 progressBar.progress = (fileListIndex.value).toDouble() / (fileList.size - 1)
 
-                if (writeAllButton.isDisable && SpotitagConfig.isEqualSkipped.value && isDurationTolerated) {
+                if (writeAllButton.isDisable && SpotitagConfig.isEqualSkipped.value) {
                     if (direction == Direction.FORWARD) {
                         onNext()
                     } else if (direction == Direction.BACKWARD) {
