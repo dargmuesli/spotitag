@@ -74,7 +74,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 /* https://stackoverflow.com/a/50119235/4682621 ***********************************************************************/
-def generatedVersionDir = "${buildDir}/generated-version"
+def generatedVersionDir = "${buildDir}/resources/main"
 
 sourceSets {
     main {
