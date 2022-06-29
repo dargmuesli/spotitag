@@ -13,6 +13,9 @@ import org.apache.logging.log4j.Logger
 object SpotitagNotification : CoroutineScope {
     private val LOGGER: Logger = LogManager.getLogger()
 
+    override val coroutineContext: JavaFxDispatcher
+        get() = Dispatchers.JavaFx
+
     fun error(text: String, e: Exception? = null) {
         LOGGER.error(text, e)
         launch(Dispatchers.JavaFx) {
@@ -43,7 +46,4 @@ object SpotitagNotification : CoroutineScope {
             true
         ).showAndWait()
     }
-
-    override val coroutineContext: JavaFxDispatcher
-        get() = Dispatchers.JavaFx
 }

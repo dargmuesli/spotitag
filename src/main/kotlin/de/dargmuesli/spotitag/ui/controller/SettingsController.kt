@@ -53,12 +53,12 @@ class SettingsController : Initializable {
 
     @FXML
     fun onClientIdInput() {
-        SpotitagConfig.spotify.clientId.set(spotifyClientIdTextField.text)
+        SpotifyConfig.clientId.set(spotifyClientIdTextField.text)
     }
 
     @FXML
     fun onClientSecretInput() {
-        SpotitagConfig.spotify.clientSecret.set(spotifyClientSecretTextField.text)
+        SpotifyConfig.clientSecret.set(spotifyClientSecretTextField.text)
     }
 
     @FXML

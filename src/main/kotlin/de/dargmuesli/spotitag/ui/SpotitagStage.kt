@@ -45,7 +45,7 @@ class SpotitagStage(
                 this.initOwner(Stage())
             }
         } catch (e: IOException) {
-            LogManager.getLogger().error("Construction of SpotitagStage failed!", e)
+            LogManager.getLogger().error("Construction of stage failed!", e)
         }
     }
 
