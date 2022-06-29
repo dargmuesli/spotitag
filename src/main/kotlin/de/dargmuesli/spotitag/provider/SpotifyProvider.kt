@@ -12,6 +12,7 @@ import de.dargmuesli.spotitag.ui.SpotitagNotification
 import org.apache.commons.text.similarity.JaroWinklerDistance
 import org.apache.logging.log4j.LogManager
 import se.michaelthelin.spotify.SpotifyApi
+import se.michaelthelin.spotify.exceptions.detailed.NotFoundException
 import se.michaelthelin.spotify.model_objects.specification.Track
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
 import java.io.ByteArrayOutputStream
@@ -109,37 +110,43 @@ object SpotifyProvider {
         val query = queryList.joinToString(" ")
         LOGGER.debug("Query: '${query}'")
 
-        val trackPaging =
-            spotifyApi.searchTracks(query).market(CountryCode.SE).build().execute()
-        LOGGER.debug("${trackPaging.total} found!")
+        try {
+            val trackPaging =
+                spotifyApi.searchTracks(query).market(CountryCode.SE).build().execute()
+            LOGGER.debug("${trackPaging.total} found!")
 
-        if (trackPaging.items.isNotEmpty()) {
-            val distanceMap = mutableMapOf<Track, Double>()
+            if (trackPaging.items.isNotEmpty()) {
+                val distanceMap = mutableMapOf<Track, Double>()
 
-            for (item in trackPaging.items) {
-                val nameDistance = musicFile.track.name?.let { DISTANCE.apply(it, item.name) } ?: 0.0
-                val artistsDistance = musicFile.track.artists?.let { artists ->
-                    DISTANCE.apply(
-                        artists.joinToString(),
-                        item.artists.joinToString { it.name })
-                } ?: 0.0
-                val albumDistance = musicFile.track.album?.name?.let { DISTANCE.apply(it, item.album.name) } ?: 0.0
-                distanceMap[item] = nameDistance + artistsDistance + albumDistance
+                for (item in trackPaging.items) {
+                    val nameDistance = musicFile.track.name?.let { DISTANCE.apply(it, item.name) } ?: 0.0
+                    val artistsDistance = musicFile.track.artists?.let { artists ->
+                        DISTANCE.apply(
+                            artists.joinToString(),
+                            item.artists.joinToString { it.name })
+                    } ?: 0.0
+                    val albumDistance = musicFile.track.album?.name?.let { DISTANCE.apply(it, item.album.name) } ?: 0.0
+                    distanceMap[item] = nameDistance + artistsDistance + albumDistance
+                }
+
+                val bestTrack: Track = distanceMap.maxByOrNull { it.value }?.key ?: trackPaging.items[0]
+                LOGGER.debug("Best distance: ${distanceMap[bestTrack]}")
+                val spotifyFileName =
+                    bestTrack.artists?.let { it.joinToString { artistSimplified -> artistSimplified.name } + " - " } + bestTrack.name
+                LOGGER.debug("Choosing id \"${bestTrack.id}\"")
+
+                if (spotifyFileName != fileName) {
+                    LOGGER.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")
+                }
+
+                return bestTrack
+            } else if (id3Properties.size > 1) {
+                return getSpotifyTrack(musicFile, *id3Properties.sliceArray(0..(id3Properties.size - 2)))
             }
-
-            val bestTrack: Track = distanceMap.maxByOrNull { it.value }?.key ?: trackPaging.items[0]
-            LOGGER.debug("Best distance: ${distanceMap[bestTrack]}")
-            val spotifyFileName =
-                bestTrack.artists?.let { it.joinToString { artistSimplified -> artistSimplified.name } + " - " } + bestTrack.name
-            LOGGER.debug("Choosing id \"${bestTrack.id}\"")
-
-            if (spotifyFileName != fileName) {
-                LOGGER.warn("Spotify file name (1) does not match file name (2):\n(1) ${spotifyFileName}\n(2) $fileName")
+        } catch (_: NotFoundException) {
+            if (id3Properties.size > 1) {
+                return getSpotifyTrack(musicFile, *id3Properties.sliceArray(0..(id3Properties.size - 2)))
             }
-
-            return bestTrack
-        } else if (id3Properties.size > 1) {
-            return getSpotifyTrack(musicFile, *id3Properties.sliceArray(0..(id3Properties.size - 2)))
         }
 
         return null
