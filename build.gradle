@@ -21,7 +21,7 @@ ext {
     kotlinSerializationVersion = '1.4.1'
     log4jVersion = '2.19.0'
     mp3agicVersion = '0.9.1'
-    spotifyWebApiJavaVersion = '7.2.2'
+    spotifyWebApiJavaVersion = '7.3.0'
 }
 
 sourceCompatibility = '11'
