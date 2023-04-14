@@ -1,1 +1,17 @@
-rootProject.name = "spotitag"
+/* https://youtrack.jetbrains.com/issue/IDEA-309824/Wizard-JavaFX-triggers-Cannot-cast-org.jetbrains.kotlin.gradle.tasks.KotlinCompileDecorated-to#focus=Comments-27-6961673.0-0 */
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == "com.github.javafx-gradle-plugin")
+                useModule("com.github.raoulsson:javafx-gradle-plugin:v0.0.15-raoulsson")
+        }
+    }
+    repositories {
+        maven { url 'https://jitpack.io' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+/**********************************************************************************************************************/
+
+rootProject.name = 'spotitag'

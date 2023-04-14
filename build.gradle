@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'java'
     id 'application'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.21'
-    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.20'
+    id 'com.github.javafx-gradle-plugin' version 'v0.0.15-raoulsson'
 }
 
 group 'de.dargmuesli'
@@ -27,7 +29,7 @@ ext {
 sourceCompatibility = '11'
 targetCompatibility = '11'
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
@@ -37,9 +39,7 @@ application {
 }
 
 [compileKotlin, compileTestKotlin].forEach {
-    it.kotlinOptions {
-        jvmTarget = '11'
-    }
+    it.compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
 }
 
 javafx {
@@ -67,12 +67,6 @@ test {
     useJUnitPlatform()
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
-    }
-}
-
 /* https://stackoverflow.com/a/50119235/4682621 ***********************************************************************/
 def generatedVersionDir = "${buildDir}/resources/main"
 
@@ -82,12 +76,12 @@ sourceSets {
     }
 }
 
-task generateVersionProperties {
+tasks.register('generateVersionProperties') {
     doLast {
         def propertiesFile = file "$generatedVersionDir/version.properties"
         propertiesFile.parentFile.mkdirs()
         def properties = new Properties()
-        properties.setProperty("version", rootProject.version.toString())
+        properties.setProperty('version', rootProject.version.toString())
         propertiesFile.withWriter { properties.store(it, null) }
     }
 }
