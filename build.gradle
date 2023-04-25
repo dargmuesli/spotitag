@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'java'
     id 'application'
-    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.21'
     id 'com.github.javafx-gradle-plugin' version 'v0.0.15-raoulsson'
 }
 
