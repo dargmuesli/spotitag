@@ -5,7 +5,7 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.21'
-    id 'com.github.javafx-gradle-plugin' version 'v0.0.15-raoulsson'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
 group 'de.dargmuesli'
