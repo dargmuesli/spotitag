@@ -19,7 +19,7 @@ ext {
     apacheCommonsVersion = '1.10.0'
     ikonliVersion = '12.3.1'
     junitVersion = '5.10.0'
-    kotlinCoroutineVersion = '1.7.2'
+    kotlinCoroutineVersion = '1.7.3'
     kotlinSerializationVersion = '1.5.1'
     log4jVersion = '2.20.0'
     mp3agicVersion = '0.9.1'
