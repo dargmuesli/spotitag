@@ -20,7 +20,7 @@ ext {
     ikonliVersion = '12.3.1'
     junitVersion = '5.10.0'
     kotlinCoroutineVersion = '1.7.3'
-    kotlinSerializationVersion = '1.5.1'
+    kotlinSerializationVersion = '1.6.0'
     log4jVersion = '2.20.0'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '8.0.0'
