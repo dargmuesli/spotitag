@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'java'
     id 'application'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
     id 'org.jetbrains.kotlin.jvm' version '1.9.10'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.10'
     id 'org.openjfx.javafxplugin' version '0.1.0'
@@ -41,6 +42,12 @@ application {
 [compileKotlin, compileTestKotlin].forEach {
     it.compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
 }
+
+/* https://github.com/openjfx/javafx-gradle-plugin/pull/154/files */
+java {
+    modularity.inferModulePath.set(false)
+}
+/******************************************************************/
 
 javafx {
     version = '11.0.2'
