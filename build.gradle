@@ -19,7 +19,7 @@ repositories {
 ext {
     apacheCommonsVersion = '1.11.0'
     ikonliVersion = '12.3.1'
-    junitVersion = '5.10.1'
+    junitVersion = '5.10.2'
     kotlinCoroutineVersion = '1.7.3'
     kotlinSerializationVersion = '1.6.2'
     log4jVersion = '2.22.1'
