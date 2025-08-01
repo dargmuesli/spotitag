@@ -17,7 +17,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.net.URL
+import java.net.URI
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -158,7 +158,7 @@ object SpotifyProvider {
                 artists = track.album.artists?.let { track.album.artists.map { (Artist(name = it.name)) } },
                 coverBase64 = track.album.images?.let {
                     val byteArrayOutputStream = ByteArrayOutputStream()
-                    val url = URL(it[0].url)
+                    val url = URI(it[0].url).toURL()
                     ImageIO.write(ImageIO.read(url), "jpg", byteArrayOutputStream)
                     val output = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray())
                     byteArrayOutputStream.close()
