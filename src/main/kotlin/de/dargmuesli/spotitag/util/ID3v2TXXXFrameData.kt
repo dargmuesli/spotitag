@@ -82,7 +82,7 @@ open class ID3v2TXXXFrameData : AbstractID3v2FrameData {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (!super.equals(other)) return false
-        if (javaClass != other.javaClass) return false
+        if (javaClass != other?.javaClass) return false
         val otherFrameData = other as ID3v2TXXXFrameData
         if (description == null) {
             if (otherFrameData.description != null) return false

@@ -24,8 +24,8 @@ object Util {
         return java.lang.String.format("%.1f %ciB", value / 1024.0, ci.current())
     }
 
-    val integerFilter: UnaryOperator<TextFormatter.Change> = UnaryOperator<TextFormatter.Change> { change ->
-        if (change.controlNewText.matches(Regex("\\d*"))) {
+    val integerFilter: UnaryOperator<TextFormatter.Change?> = UnaryOperator<TextFormatter.Change?> { change ->
+        if (change?.controlNewText?.matches(Regex("\\d*")) == true) {
             return@UnaryOperator change
         }
         return@UnaryOperator null
