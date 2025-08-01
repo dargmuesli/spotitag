@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'java'
     id 'application'
-    id 'org.javamodularity.moduleplugin' version '1.8.14'
+    id 'org.javamodularity.moduleplugin' version '1.8.15'
     id 'org.jetbrains.kotlin.jvm' version '2.2.0'
     id 'org.jetbrains.kotlin.plugin.serialization' version '2.2.0'
     id 'org.openjfx.javafxplugin' version '0.1.0'
@@ -17,12 +17,12 @@ repositories {
 }
 
 ext {
-    apacheCommonsVersion = '1.11.0'
-    ikonliVersion = '12.3.1'
-    junitVersion = '5.10.2'
-    kotlinCoroutineVersion = '1.8.0'
-    kotlinSerializationVersion = '1.6.3'
-    log4jVersion = '2.23.0'
+    apacheCommonsVersion = '1.14.0'
+    ikonliVersion = '12.4.0'
+    junitVersion = '5.13.4'
+    kotlinCoroutineVersion = '1.10.2'
+    kotlinSerializationVersion = '1.9.0'
+    log4jVersion = '2.25.1'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '9.3.0'
 }
