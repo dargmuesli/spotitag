@@ -76,7 +76,7 @@ test {
 }
 
 /* https://stackoverflow.com/a/50119235/4682621 ***********************************************************************/
-def generatedVersionDir = "${buildDir}/resources/main"
+def generatedVersionDir = "${layout.buildDirectory.asFile.get()}/resources/main"
 
 sourceSets {
     main {
