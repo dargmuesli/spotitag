@@ -33,10 +33,6 @@ java {
     modularity.inferModulePath = false // https://github.com/openjfx/javafx-gradle-plugin/pull/154/files
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
 application {
     mainModule = 'de.dargmuesli.spotitag'
     mainClass = 'de.dargmuesli.spotitag.MainApp'
