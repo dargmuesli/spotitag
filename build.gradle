@@ -11,6 +11,26 @@ plugins {
 group = 'de.dargmuesli'
 version = '1.0.0'
 
+application {
+    mainModule = 'de.dargmuesli.spotitag'
+    mainClass = 'de.dargmuesli.spotitag.MainApp'
+
+    applicationDefaultJvmArgs = ["--add-reads", "kotlin.stdlib=kotlinx.coroutines.core"]
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+
+    modularity.inferModulePath = false // https://github.com/openjfx/javafx-gradle-plugin/pull/154/files
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -24,31 +44,6 @@ ext {
     log4jVersion = '2.25.1'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '9.3.0'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-
-    modularity.inferModulePath = false // https://github.com/openjfx/javafx-gradle-plugin/pull/154/files
-}
-
-application {
-    mainModule = 'de.dargmuesli.spotitag'
-    mainClass = 'de.dargmuesli.spotitag.MainApp'
-
-    applicationDefaultJvmArgs = ["--add-reads", "kotlin.stdlib=kotlinx.coroutines.core"]
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
-    }
-}
-
-javafx {
-    version = '21.0.8'
-    modules = ['javafx.fxml', 'javafx.swing']
 }
 
 dependencies {
@@ -65,6 +60,11 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+}
+
+javafx {
+    version = '21.0.8'
+    modules = ['javafx.fxml', 'javafx.swing']
 }
 
 test {
