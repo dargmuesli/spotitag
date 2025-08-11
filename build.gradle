@@ -60,7 +60,7 @@ dependencies {
     implementation "org.apache.commons:commons-text:$apacheCommonsVersion"
     implementation "org.apache.logging.log4j:log4j-api:$log4jVersion"
     implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
-    implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutineVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion"
     implementation "org.kordamp.ikonli:ikonli-fontawesome5-pack:$ikonliVersion"
