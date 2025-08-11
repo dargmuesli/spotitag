@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id 'java'
     id 'application'
     id 'org.javamodularity.moduleplugin' version '1.8.15'
     id 'org.jetbrains.kotlin.jvm' version '2.2.0'
@@ -9,8 +8,28 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-group 'de.dargmuesli'
-version '1.0.0'
+group = 'de.dargmuesli'
+version = '1.0.0'
+
+application {
+    mainModule = 'de.dargmuesli.spotitag'
+    mainClass = 'de.dargmuesli.spotitag.MainApp'
+
+    applicationDefaultJvmArgs = ["--add-reads", "kotlin.stdlib=kotlinx.coroutines.core"]
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+
+    modularity.inferModulePath = false // https://github.com/openjfx/javafx-gradle-plugin/pull/154/files
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
 
 repositories {
     mavenCentral()
@@ -27,41 +46,12 @@ ext {
     spotifyWebApiJavaVersion = '9.3.0'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-application {
-    mainModule = 'de.dargmuesli.spotitag'
-    mainClass = 'de.dargmuesli.spotitag.MainApp'
-}
-
-[compileKotlin, compileTestKotlin].forEach {
-    it.compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-}
-
-/* https://github.com/openjfx/javafx-gradle-plugin/pull/154/files */
-java {
-    modularity.inferModulePath.set(false)
-}
-/******************************************************************/
-
-javafx {
-    version = '11.0.2'
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
-}
-
 dependencies {
     implementation "com.mpatric:mp3agic:$mp3agicVersion"
     implementation "org.apache.commons:commons-text:$apacheCommonsVersion"
     implementation "org.apache.logging.log4j:log4j-api:$log4jVersion"
     implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
-    implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutineVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion"
     implementation "org.kordamp.ikonli:ikonli-fontawesome5-pack:$ikonliVersion"
@@ -72,12 +62,17 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
+javafx {
+    version = '21.0.8'
+    modules = ['javafx.fxml', 'javafx.swing']
+}
+
 test {
     useJUnitPlatform()
 }
 
 /* https://stackoverflow.com/a/50119235/4682621 ***********************************************************************/
-def generatedVersionDir = "${buildDir}/resources/main"
+def generatedVersionDir = "${layout.buildDirectory.asFile.get()}/resources/main"
 
 sourceSets {
     main {

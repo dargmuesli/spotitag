@@ -252,11 +252,14 @@ class DashboardController : CoroutineScope {
     @FXML
     fun chooseDirectory(actionEvent: ActionEvent) {
         FileSystemConfig.sourceDirectory.value.let {
+            if (it === null) return@let
             val sourceDirectory = File(it)
             directoryChooser.initialDirectory = if (sourceDirectory.exists()) sourceDirectory else null
         }
 
-        val file: File = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
+        val file: File? = directoryChooser.showDialog((actionEvent.source as Node).scene.window as Stage)
+
+        if (file === null) return
 
         directoryTextField.text = file.absolutePath
         FileSystemConfig.sourceDirectory.set(file.absolutePath)
