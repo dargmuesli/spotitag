@@ -15,7 +15,7 @@ application {
     mainModule = 'de.dargmuesli.spotitag'
     mainClass = 'de.dargmuesli.spotitag.MainApp'
 
-    applicationDefaultJvmArgs = ["--add-reads", "kotlin.stdlib=kotlinx.coroutines.core"]
+    applicationDefaultJvmArgs = ["--add-reads", "kotlin.stdlib=kotlinx.coroutines.core"] // needed for debugging
 }
 
 java {
