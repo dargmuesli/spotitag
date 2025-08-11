@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'de.dargmuesli'
-version = '1.0.0'
+version = '1.0.1'
 
 application {
     mainModule = 'de.dargmuesli.spotitag'
