@@ -27,8 +27,8 @@ ext {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -40,15 +40,17 @@ application {
     mainClass = 'de.dargmuesli.spotitag.MainApp'
 }
 
-[compileKotlin, compileTestKotlin].forEach {
-    it.compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-}
-
 /* https://github.com/openjfx/javafx-gradle-plugin/pull/154/files */
 java {
     modularity.inferModulePath.set(false)
 }
 /******************************************************************/
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
+    }
+}
 
 javafx {
     version = '11.0.2'
