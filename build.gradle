@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'application'
     id 'org.javamodularity.moduleplugin' version '1.8.15'
-    id 'org.jetbrains.kotlin.jvm' version '2.2.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '2.2.0'
+    id 'org.jetbrains.kotlin.jvm' version '2.2.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.2.10'
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
