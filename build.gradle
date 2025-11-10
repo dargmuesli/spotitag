@@ -43,7 +43,7 @@ ext {
     kotlinSerializationVersion = '1.9.0'
     log4jVersion = '2.25.2'
     mp3agicVersion = '0.9.1'
-    spotifyWebApiJavaVersion = '9.3.0'
+    spotifyWebApiJavaVersion = '9.4.0'
 }
 
 dependencies {
