@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id 'application'
     id 'org.javamodularity.moduleplugin' version '2.0.0'
-    id 'org.jetbrains.kotlin.jvm' version '2.2.21'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '2.2.21'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.0'
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
@@ -41,7 +41,7 @@ ext {
     junitVersion = '6.0.1'
     kotlinCoroutineVersion = '1.10.2'
     kotlinSerializationVersion = '1.9.0'
-    log4jVersion = '2.25.2'
+    log4jVersion = '2.25.3'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '9.4.0'
 }
