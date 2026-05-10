@@ -39,9 +39,9 @@ ext {
     apacheCommonsVersion = '1.15.0'
     ikonliVersion = '12.4.0'
     junitVersion = '6.0.3'
-    kotlinCoroutineVersion = '1.10.2'
+    kotlinCoroutineVersion = '1.11.0'
     kotlinSerializationVersion = '1.11.0'
-    log4jVersion = '2.25.4'
+    log4jVersion = '2.26.0'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '9.4.0'
 }
