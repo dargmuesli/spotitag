@@ -41,7 +41,7 @@ ext {
     junitVersion = '6.1.1'
     kotlinCoroutineVersion = '1.11.0'
     kotlinSerializationVersion = '1.11.0'
-    log4jVersion = '2.26.0'
+    log4jVersion = '2.26.1'
     mp3agicVersion = '0.9.1'
     spotifyWebApiJavaVersion = '9.4.0'
 }
