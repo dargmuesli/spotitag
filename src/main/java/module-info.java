@@ -27,9 +27,5 @@ module de.dargmuesli.spotitag {
     opens de.dargmuesli.spotitag.ui.controller to javafx.fxml;
     opens de.dargmuesli.spotitag.util to kotlinx.serialization.core;
 
-    exports de.dargmuesli.spotitag.persistence.cache;
-    exports de.dargmuesli.spotitag.persistence.config;
-    exports de.dargmuesli.spotitag.persistence.state;
-    exports de.dargmuesli.spotitag.persistence;
-    exports de.dargmuesli.spotitag;
+    exports de.dargmuesli.spotitag to javafx.graphics;
 }
