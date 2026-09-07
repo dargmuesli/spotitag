@@ -1,6 +1,5 @@
 package de.dargmuesli.spotitag.provider
 
-import com.neovisionaries.i18n.CountryCode
 import de.dargmuesli.spotitag.model.enums.Id3Properties
 import de.dargmuesli.spotitag.model.filesystem.MusicFile
 import de.dargmuesli.spotitag.model.music.Album
@@ -12,6 +11,7 @@ import de.dargmuesli.spotitag.ui.SpotitagNotification
 import org.apache.commons.text.similarity.JaroWinklerDistance
 import org.apache.logging.log4j.LogManager
 import se.michaelthelin.spotify.SpotifyApi
+import se.michaelthelin.spotify.enums.CountryCode
 import se.michaelthelin.spotify.exceptions.detailed.NotFoundException
 import se.michaelthelin.spotify.model_objects.specification.Track
 import se.michaelthelin.spotify.requests.data.AbstractDataPagingRequest
