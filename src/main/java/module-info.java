@@ -1,9 +1,10 @@
 module de.dargmuesli.spotitag {
     requires com.google.gson;
     requires java.desktop;
-    requires java.logging;
+    requires javafx.base;
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
     requires javafx.swing;
     requires kotlin.stdlib;
     requires kotlinx.coroutines.core;
