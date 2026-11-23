@@ -8,6 +8,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import se.michaelthelin.spotify.model_objects.ModelObjects
 import se.michaelthelin.spotify.model_objects.specification.Track
 
 class SpotifyTrackSerializer {
@@ -23,7 +24,7 @@ class SpotifyTrackSerializer {
         }
 
         override fun deserialize(decoder: Decoder): Track {
-            return Track.JsonUtil().createModelObject(decoder.decodeString())
+            return ModelObjects.fromJson(decoder.decodeString(), Track::class.java)
         }
     }
 }
